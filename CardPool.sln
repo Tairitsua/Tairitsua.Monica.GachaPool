@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardPool", "CardPool\CardPool.csproj", "{23234511-2FE9-4010-9165-31E3AD5F3808}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardPool.Tests", "CardPool.Tests\CardPool.Tests.csproj", "{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23234511-2FE9-4010-9165-31E3AD5F3808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23234511-2FE9-4010-9165-31E3AD5F3808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23234511-2FE9-4010-9165-31E3AD5F3808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23234511-2FE9-4010-9165-31E3AD5F3808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
