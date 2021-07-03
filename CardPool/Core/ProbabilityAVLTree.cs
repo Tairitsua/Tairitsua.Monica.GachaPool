@@ -47,8 +47,8 @@ namespace CardPool.Core
         }
         public bool Insert(Card value)
         {
-	        if (value.Probability == null) throw new Exception(value + " probability can not be null");
-	        _curProbabilityIndex += value.Probability.Value;
+	        if (value.RealProbability == null) throw new Exception(value + " probability can not be null");
+	        _curProbabilityIndex += value.RealProbability;
 	        var key = _curProbabilityIndex;
             var node = _root;
 

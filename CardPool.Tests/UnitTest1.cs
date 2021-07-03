@@ -21,7 +21,7 @@ namespace CardPool.Tests
         public void PrintTest1()
         {
             Console.WriteLine(_pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.Probability));
+            Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.RealProbability));
         }
     
         [Test]

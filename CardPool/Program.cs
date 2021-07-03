@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using CardPool.Core;
-using Koubot.Tool.General;
+
 
 namespace CardPool
 {
@@ -50,7 +50,8 @@ namespace CardPool
         {
             var oneStarCards = Card<int>.CreateMultiCards(Card.CardRarity.OneStar,
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            oneStarCards[4].Probability = 0.000001;
+            oneStarCards[4].SetProbability = 0.000001;
+            oneStarCards[5].TotalCount = 50000;
             _pool = new CardsPool(oneStarCards);
         }
 
@@ -58,7 +59,6 @@ namespace CardPool
         {
             BasicSetup();
             Console.WriteLine(_pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.Probability));
             var statistician = new CardDrawStatistician(_pool);
             var drawer = new CardDrawer(_pool);
             var writer = new ConsoleWriteUpdater();

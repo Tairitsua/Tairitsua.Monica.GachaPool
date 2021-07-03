@@ -6,8 +6,6 @@ namespace CardPool.Core
 {
     public abstract class Card
     {
-        
-
         /// <summary>
         /// The card rarity. The global probability will auto generate base on this.
         /// </summary>
@@ -18,15 +16,73 @@ namespace CardPool.Core
         /// </summary>
         public double? ProbabilityOfSameRarityPool { get; set; }
         /// <summary>
-        /// If not set, the probability will auto generate according to rarity and the whole cards pool. The probability
-        /// is relative to the entire card pool and not to the corresponding rarity cards.
+        /// The card real probability relative to the entire card pool.
         /// </summary>
-        public double? Probability { get; set; }
+        public double RealProbability { get; internal set; }
 
+        /// <summary>
+        /// If not set, the real probability will auto generate according to rarity and the whole cards pool. The probability
+        /// is relative to the entire card pool and not to the corresponding rarity cards. When set the probability, it also
+        /// auto set the IsFixedRealProbability property true, means the real probability will be fixed forever.
+        /// </summary>
+        public double? SetProbability
+        {
+            get => _setProbability;
+            set
+            {
+                if(value == null) return;
+                _setProbability = value;
+                RealProbability = _setProbability.Value;
+                IsFixedRealProbability = true;
+            }
+        }
 
+        /// <summary>
+        /// Indicate that the card's real probability will not change even if the probability of some cards in pool changed. 
+        /// </summary>
+        public bool IsFixedRealProbability
+        {
+            get => (Attributes & CardAttributes.FixedRealProbability) != 0;
+            set
+            {
+                if (value == false)
+                {
+                    Attributes &= ~CardAttributes.FixedRealProbability;
+                }
+                else
+                {
+                    Attributes |= CardAttributes.FixedRealProbability;
+                }
+            }
+        }
+        /// <summary>
+        /// Indicate that the card has been removed and will not appear at card pool.
+        /// (or to say the probability has becomes zero)
+        /// </summary>
+        public bool IsRemoved
+        {
+            get => (Attributes & CardAttributes.Removed) != 0;
+            internal set
+            {
+                if (value == false)
+                {
+                    Attributes &= ~CardAttributes.Removed;
+                }
+                else
+                {
+                    Attributes |= CardAttributes.Removed;
+                    RealProbability = 0;
+                }
+            }
+        }
+        
+        public CardAttributes Attributes { get; private set; }
+        
         #region LimitedCard
         private int _totalCount;
         private int _remainCount;
+        private double? _setProbability;
+
         /// <summary>
         /// If set total count, it means the card is limited, and its probability will become zero when this
         /// kind of cards run out. Default is null which means is infinite.
@@ -48,9 +104,24 @@ namespace CardPool.Core
         /// <summary>
         /// This property will auto turn to true when you set the card TotalCount property.
         /// </summary>
-        public bool IsLimitedCard { get; private set; }
+        public bool IsLimitedCard 
+        {
+            get => (Attributes & CardAttributes.Limited) != 0;
+            private set
+            {
+                if (value == false)
+                {
+                    Attributes &= ~CardAttributes.Limited;
+                }
+                else
+                {
+                    Attributes |= CardAttributes.Limited;
+                }
+            }
+        }
         /// <summary>
-        /// Try to subtract the number of cards to ensure that the card was successfully obtained. Only available when the card is limited card.
+        /// Try to subtract the number of cards to ensure that the card was successfully obtained.
+        /// Only available when the card is limited card.
         /// </summary>
         /// <returns></returns>
         internal bool SuccessGetCard()
@@ -67,7 +138,7 @@ namespace CardPool.Core
         
         public override string ToString()
         {
-            return $"{Probability:P5} [{Rarity}]";
+            return $"{RealProbability:P5} [{Rarity}]";
         }
 
         /// <summary>
@@ -87,6 +158,14 @@ namespace CardPool.Core
             NineStar,
             TenStar
         }
+        [Flags]
+        public enum CardAttributes
+        {
+            None = 0,
+            Limited = 1 << 0,
+            FixedRealProbability = 1 << 1,
+            Removed = 1 << 2,
+        }
     }
     
     /// <summary>
@@ -98,23 +177,10 @@ namespace CardPool.Core
         {
             
         }
-        public NothingCard(double remainProbability)
+        public NothingCard(double remainRealProbability)
         {
-            Probability = remainProbability;
+            RealProbability = remainRealProbability;
         }
-
-        // public override bool Equals(object? obj)
-        // {
-        //     return obj is NothingCard nothingCard && (Probability == null && nothingCard.Probability == null ||
-        //                                               nothingCard.Probability != null &&
-        //                                               Probability != null &&
-        //                                               Math.Abs(nothingCard.Probability.Value - Probability.Value) < 1E-7);
-        // }
-        //
-        // public override int GetHashCode()
-        // {
-        //     return (int)(Probability ?? 1) * 13131313;
-        // }
 
         public override bool Equals(object? obj)
         {

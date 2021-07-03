@@ -17,7 +17,7 @@ namespace CardPool.Tests
             _pool = new CardsPool(oneStarCards);
             _pool.BuildPool();
             Console.WriteLine(_pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.Probability));
+            Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.RealProbability));
         }
         [Test]
         public void ProbabilityTest()

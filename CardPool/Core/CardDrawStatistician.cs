@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CardPool.Core
@@ -37,6 +38,7 @@ namespace CardPool.Core
         public string GetCurrentDescription()
         {
             var des = new StringBuilder();
+            des.Append($"sum of all probability: {CardRecordDict.Keys.Sum(c => c.RealProbability)}\n");
             des.Append($"total drawn times: {RecordedTimes}\n");
             foreach (var (card, getTimes) in CardRecordDict)
             {

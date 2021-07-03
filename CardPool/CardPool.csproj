@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Koubot.Tool" Version="1.0.5" />
+      <Compile Remove="Core\ProbabilityAVLTree.cs" />
     </ItemGroup>
 
 </Project>

@@ -149,6 +149,13 @@ namespace CardPool.Core
 
         #endregion
         
+        /// <summary>
+        /// Set the given rarity total probability, and the probability will arrange to corresponding card according to
+        /// each set. (Default is dividing equally)
+        /// </summary>
+        /// <param name="rarity"></param>
+        /// <param name="totalProbability"></param>
+        /// <returns></returns>
         public CardsPool SetPoolRarityProbability(Card.CardRarity rarity, double totalProbability)
         {
             _buildPoolLockSlim.EnterWriteLock();
@@ -163,7 +170,73 @@ namespace CardPool.Core
             }
             return this;
         }
+
+        /// <summary>
+        /// Only when all the card in pool has the real probability.
+        /// </summary>
+        /// <param name="removedProbability">Total probability of cards which have been removed from pool</param>
+        private void RemoveCardProbability(double removedProbability)
+        {
+            _buildPoolLockSlim.EnterWriteLock();
+            try
+            {
+                
+                var perCardGet = removedProbability / _cards.Count(c => !c.IsFixedRealProbability && !c.IsRemoved);
+                foreach (var card in _cards)
+                {
+                    if(card.IsFixedRealProbability || card.IsRemoved) continue;
+                    card.RealProbability += perCardGet;
+                }
+                var remainingProbability = 1 - _cards.Sum(c => c.RealProbability);
+                CreateBinarySearchLine(remainingProbability);
+            }
+            finally
+            {
+                _buildPoolLockSlim.ExitWriteLock();
+            }
+        }
         
+        private void CreateBinarySearchLine(double remainingProbability)
+        {
+            var searchLine = new KeyValuePair<double, Card>[_cards.Count];
+            double probabilityIndex = 0;
+            probabilityIndex += remainingProbability;
+
+            var curRarity = _cards.First().Rarity;
+            var curRarityStartIndex = 0;
+            foreach (var (card, index) in _cards.Select((v, i) => (v, i)))
+            {
+                searchLine[index] = new KeyValuePair<double, Card>(probabilityIndex, card);
+                probabilityIndex += card.RealProbability;
+                //record rarity info
+                if (card.Rarity != curRarity)
+                {
+                    RarityInterval.Add(curRarity, new KeyValuePair<int, int>(curRarityStartIndex, index - 1));
+                    curRarityStartIndex = index;
+                    curRarity = card.Rarity;
+                }
+
+            }
+
+            if (remainingProbability != 0)
+            {
+                if (_notingCardBeTheFirstValidCard)
+                {
+                    _remainedCard = _cards.First();
+                    _remainedCard.RealProbability += remainingProbability;
+                }
+                else if (_remainedCard is NothingCard nothingCard)
+                {
+                    nothingCard.RealProbability = remainingProbability;
+                }
+            }
+
+            SearchLine = new BinarySearchLine
+            {
+                LeftMostCard = _remainedCard,
+                CardsBinarySearchLine = searchLine
+            };
+        }
         /// <summary>
         /// Sort out the added cards, adjust their probability and build the proper pool. The build is auto but also can
         /// invoke actively.
@@ -179,12 +252,11 @@ namespace CardPool.Core
                 if (_cards == null || _cards.Count == 0) throw new InvalidOperationException("Cards pool is empty");
                 _cards = _cards.OrderBy(card => card.Rarity).ToList();
                 _containLimitedCard = _cards.Any(c => c.IsLimitedCard);
-                var cards = _cards;
                 // fulfill all cards with global probability.
                 foreach (var (rarity, wholeProbability) in RarityProbabilitySetting)
                 {
                     if (wholeProbability == 0) continue;
-                    var cardsWithSameRarity = cards.Where(c => c.Rarity == rarity && c.Probability == null).ToList();
+                    var cardsWithSameRarity = _cards.Where(c => c.Rarity == rarity && c.SetProbability == null).ToList();
                     var count = cardsWithSameRarity.Count;
                     var perProbability = (wholeProbability - cardsWithSameRarity
                         .Where(c => c.ProbabilityOfSameRarityPool != null)
@@ -193,70 +265,30 @@ namespace CardPool.Core
                     {
                         if (card.ProbabilityOfSameRarityPool != null)
                         {
-                            card.Probability = wholeProbability * card.ProbabilityOfSameRarityPool;
+                            card.RealProbability = wholeProbability * card.ProbabilityOfSameRarityPool.Value;
                         }
                         else
                         {
-                            card.Probability = perProbability;
+                            card.RealProbability = perProbability;
                         }
                     }
                 }
 
-                var remainingProbability = 1 - cards.Sum(c => c.Probability).Value;
+                var remainingProbability = 1 - _cards.Sum(c => c.RealProbability);
                 if (remainingProbability < 0)
                     throw new InvalidOperationException("The cards pool total probability is out of 100%");
-                var cardsHaveNotSetProbability = cards.Where(c => c.Probability == null).ToList();
+                var cardsHaveNotSetProbability = _cards.Where(c => c.SetProbability == null).ToList();
                 if (cardsHaveNotSetProbability.Count > 0)
                 {
                     var perCardProbability = remainingProbability / cardsHaveNotSetProbability.Count;
                     foreach (var card in cardsHaveNotSetProbability)
                     {
-                        card.Probability = perCardProbability;
+                        card.RealProbability = perCardProbability;
                     }
 
                     remainingProbability = 0;
                 }
-
-
-
-                var searchLine = new KeyValuePair<double, Card>[cards.Count];
-                double probabilityIndex = 0;
-                probabilityIndex += remainingProbability;
-
-                var curRarity = cards.First().Rarity;
-                var curRarityStartIndex = 0;
-                foreach (var (card, index) in cards.Select((v, i) => (v, i)))
-                {
-                    searchLine[index] = new KeyValuePair<double, Card>(probabilityIndex, card);
-                    probabilityIndex += card.Probability.Value;
-                    //record rarity info
-                    if (card.Rarity != curRarity)
-                    {
-                        RarityInterval.Add(curRarity, new KeyValuePair<int, int>(curRarityStartIndex, index - 1));
-                        curRarityStartIndex = index;
-                        curRarity = card.Rarity;
-                    }
-
-                }
-
-                if (remainingProbability != 0)
-                {
-                    if (_notingCardBeTheFirstValidCard)
-                    {
-                        _remainedCard = cards.First();
-                        _remainedCard.Probability += remainingProbability;
-                    }
-                    else if (_remainedCard is NothingCard nothingCard)
-                    {
-                        nothingCard.Probability = remainingProbability;
-                    }
-                }
-
-                SearchLine = new BinarySearchLine
-                {
-                    LeftMostCard = _remainedCard,
-                    CardsBinarySearchLine = searchLine
-                };
+                CreateBinarySearchLine(remainingProbability);
             }
             finally
             {
@@ -278,7 +310,8 @@ namespace CardPool.Core
                     _buildPoolLockSlim.ExitWriteLock();
                 }
             }
-            string append = null;
+
+            string append = $"sum of all probability: {Cards.Sum(c => c.RealProbability)}\n";
             if (_remainedCard != null) append = $"[RemainedCard] {_remainedCard}\n";
             return append + string.Join('\n', Cards);
         }
@@ -318,11 +351,12 @@ namespace CardPool.Core
                     {
                         if (card.RemainCount == 0)
                         {
-                            card.Probability = 0;
                             _buildPoolLockSlim.EnterWriteLock();
                             try
                             {
-                                BuildPool();
+                                var tmp = card.RealProbability;
+                                card.IsRemoved = true;
+                                RemoveCardProbability(tmp);
                             }
                             finally
                             {
