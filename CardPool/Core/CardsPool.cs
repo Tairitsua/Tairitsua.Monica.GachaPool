@@ -40,8 +40,18 @@ namespace CardPool.Core
             get => _remainedCard;
             set
             {
-                _remainedCard = value ?? new NothingCard();
-                _notingCardBeTheFirstValidCard = false;
+                _buildPoolLockSlim.EnterWriteLock();
+                try
+                {
+                    _needBuildPool = true;
+                    _remainedCard = value ?? new NothingCard();
+                    _notingCardBeTheFirstValidCard = false;
+                }
+                finally
+                {
+                    _buildPoolLockSlim.ExitWriteLock();
+                }
+                
             }
         }
 
@@ -63,6 +73,7 @@ namespace CardPool.Core
         }
         public CardsPool(IEnumerable<Card> cards, params IEnumerable<Card>[] appendCards)
         {
+            _needBuildPool = true;
             _cards = cards.ToList();
             if (appendCards == null) return;
             foreach (var cardList in appendCards)
@@ -208,7 +219,7 @@ namespace CardPool.Core
 
 
 
-                var searchLine = new Dictionary<double, Card>();
+                var searchLine = new KeyValuePair<double, Card>[cards.Count];
                 double probabilityIndex = 0;
                 probabilityIndex += remainingProbability;
 
@@ -216,7 +227,7 @@ namespace CardPool.Core
                 var curRarityStartIndex = 0;
                 foreach (var (card, index) in cards.Select((v, i) => (v, i)))
                 {
-                    searchLine.Add(probabilityIndex, card);
+                    searchLine[index] = new KeyValuePair<double, Card>(probabilityIndex, card);
                     probabilityIndex += card.Probability.Value;
                     //record rarity info
                     if (card.Rarity != curRarity)

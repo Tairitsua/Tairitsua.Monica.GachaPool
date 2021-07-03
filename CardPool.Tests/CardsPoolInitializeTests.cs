@@ -46,7 +46,6 @@ namespace CardPool.Tests
                 new TimeSpan(1, 1, 10));
             var pool = new CardsPool(oneStarCards, twoStarCards, twoStarCardsAppend);
             pool.AddCards(singleCard);
-            
             pool.RemainedCard = null;
             pool.SetPoolRarityProbability(Card.CardRarity.OneStar, 0.5)
                 .SetPoolRarityProbability(Card.CardRarity.TwoStar, 0.3);

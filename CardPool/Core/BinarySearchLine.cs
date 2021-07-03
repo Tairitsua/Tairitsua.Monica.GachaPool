@@ -16,7 +16,7 @@ namespace CardPool.Core
         /// probability interval beginning (included for current card) and the previous card's ending
         /// (excluded for previous card).
         /// </summary>
-        public Dictionary<double, Card> CardsBinarySearchLine  { get; init; }
+        public KeyValuePair<double, Card>[] CardsBinarySearchLine  { get; init; }
         
         /// <summary>
         /// Search from all cards.
@@ -25,7 +25,7 @@ namespace CardPool.Core
         /// <returns></returns>
         public Card Search(double probability)
         {
-            return BinarySearch(probability, 0, CardsBinarySearchLine.Count - 1);
+            return BinarySearch(probability, 0, CardsBinarySearchLine.Length - 1);
         }
         /// <summary>
         /// Search in specific index interval.
@@ -50,17 +50,17 @@ namespace CardPool.Core
             {
                 if (startIndex == endIndex)
                 {
-                    var curIndexProbability = CardsBinarySearchLine.ElementAt(startIndex).Key;
+                    var curIndexProbability = CardsBinarySearchLine[startIndex].Key;
                     if (curIndexProbability <= probability) return CardsBinarySearchLine.ElementAt(startIndex).Value;
                     if (curIndexProbability > probability)
                     {
                         return startIndex == 0 ? 
                             LeftMostCard : 
-                            CardsBinarySearchLine.ElementAt(startIndex - 1).Value;
+                            CardsBinarySearchLine[startIndex-1].Value;
                     }
                 }
                 var middle = (endIndex + startIndex) / 2;
-                if (CardsBinarySearchLine.ElementAt(middle).Key > probability)
+                if (CardsBinarySearchLine[middle].Key > probability)
                 {
                     endIndex = middle - 1;
                 }

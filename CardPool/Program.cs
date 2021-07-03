@@ -42,7 +42,7 @@ namespace CardPool
     {
         private static void Main(string[] args)
         {
-            // StartDraw();
+            StartDraw();
         }
         
         private static CardsPool _pool;
@@ -57,7 +57,6 @@ namespace CardPool
         public static void StartDraw()
         {
             BasicSetup();
-            _pool.BuildPool();
             Console.WriteLine(_pool.GetPoolProbabilityInfo());
             Console.WriteLine("sum of all probability: "+_pool.Cards.Sum(c=>c.Probability));
             var statistician = new CardDrawStatistician(_pool);
