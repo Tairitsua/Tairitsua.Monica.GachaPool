@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using CardPool.Core;
 
 
@@ -42,7 +43,8 @@ namespace CardPool
     {
         private static void Main(string[] args)
         {
-            StartDraw();
+            //StartSerialDraw();
+            StartParallelDraw();
         }
         
         private static CardsPool _pool;
@@ -54,8 +56,40 @@ namespace CardPool
             oneStarCards[5].TotalCount = 50000;
             _pool = new CardsPool(oneStarCards);
         }
+        
+        
+        public static void StartParallelDraw()
+        {
+            BasicSetup();
+            Console.WriteLine(_pool.GetPoolProbabilityInfo());
+            var statistician = new CardDrawStatistician(_pool);
+            var drawer = new CardDrawer(_pool);
+            var writer = new ConsoleWriteUpdater();
+            var sleepTime = 1000;
+            int previousDrawTimes = 0;
+            int threadCount = 13;
+            void Action()
+            {
+                while (true)
+                {
+                    var drawOutCard = drawer.DrawCard();
+                    statistician.RecordDrawnCard(drawOutCard);
+                }
+            }
 
-        public static void StartDraw()
+            for (int i = 0; i < threadCount; i++)
+            {
+                Task.Factory.StartNew(Action);
+            }
+            while (true)
+            {
+                Thread.Sleep(sleepTime);
+                var perMsGetCard = (statistician.RecordedTimes - previousDrawTimes) / sleepTime;
+                previousDrawTimes = statistician.RecordedTimes;
+                writer.Update($"{threadCount} threads 1ms could draw {perMsGetCard} cards\n{statistician.GetCurrentDescription()}");
+            }
+        }
+        public static void StartSerialDraw()
         {
             BasicSetup();
             Console.WriteLine(_pool.GetPoolProbabilityInfo());

@@ -10,6 +10,7 @@ namespace CardPool.Core
     {
         private Card _remainedCard;
         private static readonly Random RandomSeed = new();
+        private static readonly object _randomLock = new();
         /// <summary>
         /// The whole probability setting of cards which have the same specific rarity.
         /// </summary>
@@ -180,7 +181,7 @@ namespace CardPool.Core
             _buildPoolLockSlim.EnterWriteLock();
             try
             {
-                
+                _containLimitedCard = _cards.Any(c => c.IsLimitedCard && !c.IsRemoved);
                 var perCardGet = removedProbability / _cards.Count(c => !c.IsFixedRealProbability && !c.IsRemoved);
                 foreach (var card in _cards)
                 {
@@ -251,7 +252,7 @@ namespace CardPool.Core
                 _needBuildPool = false;
                 if (_cards == null || _cards.Count == 0) throw new InvalidOperationException("Cards pool is empty");
                 _cards = _cards.OrderBy(card => card.Rarity).ToList();
-                _containLimitedCard = _cards.Any(c => c.IsLimitedCard);
+                _containLimitedCard = _cards.Any(c => c.IsLimitedCard && !c.IsRemoved);
                 // fulfill all cards with global probability.
                 foreach (var (rarity, wholeProbability) in RarityProbabilitySetting)
                 {
@@ -331,7 +332,8 @@ namespace CardPool.Core
                 }
             }
 
-            if (_containLimitedCard)
+            var useUpgradeable = _containLimitedCard;
+            if (useUpgradeable)
             {
                 _buildPoolLockSlim.EnterUpgradeableReadLock();
             }
@@ -342,9 +344,14 @@ namespace CardPool.Core
 
             try
             {
+                double randomNum;
+                lock (_randomLock)
+                {
+                    randomNum = RandomSeed.NextDouble();
+                }
                 var card = startIndex == null || endIndex == null
-                    ? SearchLine.Search(RandomSeed.NextDouble())
-                    : SearchLine.Search(RandomSeed.NextDouble(), startIndex.Value, endIndex.Value);
+                    ? SearchLine.Search(randomNum)
+                    : SearchLine.Search(randomNum, startIndex.Value, endIndex.Value);
                 if (card.IsLimitedCard)
                 {
                     if (card.SuccessGetCard())
@@ -372,7 +379,7 @@ namespace CardPool.Core
             }
             finally
             {
-                if (_containLimitedCard)
+                if (useUpgradeable)
                 {
                     _buildPoolLockSlim.ExitUpgradeableReadLock();
                 }
