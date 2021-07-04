@@ -17,7 +17,7 @@ namespace CardPool.Core
             return InternalDrawCard();
         }
 
-        public Card DrawCard(Card.CardRarity constrainedRarity)
+        public Card DrawCard(CardRarity constrainedRarity)
         {
             if (!Pool.RarityInterval.ContainsKey(constrainedRarity)) return null;
             var (x, y) = Pool.RarityInterval[constrainedRarity];
@@ -54,7 +54,7 @@ namespace CardPool.Core
             return InternalDrawCard();
         }
 
-        public new Card<T> DrawCard(Card.CardRarity constrainedRarity)
+        public new Card<T> DrawCard(CardRarity constrainedRarity)
         {
             if (!Pool.RarityInterval.ContainsKey(constrainedRarity)) return null;
             var (x, y) = Pool.RarityInterval[constrainedRarity];

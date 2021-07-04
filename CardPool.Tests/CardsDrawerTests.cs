@@ -12,7 +12,7 @@ namespace CardPool.Tests
         [SetUp]
         public void Setup()
         {
-            var oneStarCards = Card<int>.CreateMultiCards(Card.CardRarity.OneStar,
+            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar,
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
             _pool = new CardsPool(oneStarCards);
             _pool.BuildPool();

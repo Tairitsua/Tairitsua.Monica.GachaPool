@@ -31,7 +31,7 @@ namespace CardPool.Tests
         [Test]
         public void TestUnexpectedCreate2()
         {
-            var oneStarCards = Card<int>.CreateMultiCards(Card.CardRarity.OneStar, 1);
+            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1);
             var pool = new CardsPool(oneStarCards);
             pool.BuildPool();
             Console.WriteLine(pool.GetPoolProbabilityInfo());
@@ -49,18 +49,18 @@ namespace CardPool.Tests
         [Test]
         public void TestRarityCreate1()
         {
-            var oneStarCards = Card<int>.CreateMultiCards(Card.CardRarity.OneStar, 1, 2, 3, 4, 5);
-            var twoStarCards = Card<int>.CreateMultiCards(Card.CardRarity.TwoStar, 11, 12, 13, 14, 15);
+            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
+            var twoStarCards = Card<int>.CreateMultiCards(CardRarity.TwoStar, 11, 12, 13, 14, 15);
             var singleCard = new Card<int>(100) {SetProbability = 0.005};
-            var twoStarCardsAppend = Card<TimeSpan>.CreateMultiCards(Card.CardRarity.TwoStar,
+            var twoStarCardsAppend = Card<TimeSpan>.CreateMultiCards(CardRarity.TwoStar,
                 new TimeSpan(1, 0, 0),
                 new TimeSpan(1, 1, 0),
                 new TimeSpan(1, 1, 10));
             var pool = new CardsPool(oneStarCards, twoStarCards, twoStarCardsAppend);
             pool.AddCards(singleCard);
             pool.RemainedCard = null;
-            pool.SetPoolRarityProbability(Card.CardRarity.OneStar, 0.5)
-                .SetPoolRarityProbability(Card.CardRarity.TwoStar, 0.3);
+            pool.SetPoolRarityProbability(CardRarity.OneStar, 0.5)
+                .SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
             pool.BuildPool();
             Console.WriteLine(pool.GetPoolProbabilityInfo());
             Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));

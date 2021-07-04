@@ -12,9 +12,9 @@ namespace CardPool.Tests
         [SetUp]
         public void Setup()
         {
-            var oneStarCards = Card<int>.CreateMultiCards(Card.CardRarity.OneStar, 1, 2, 3, 4, 5, 6, 7);
+            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5, 6, 7);
             _pool = new CardsPool(oneStarCards);
-            _pool.SetPoolRarityProbability(Card.CardRarity.OneStar, 0.1);
+            _pool.SetPoolRarityProbability(CardRarity.OneStar, 0.1);
             _pool.BuildPool();
         }
         [Test]

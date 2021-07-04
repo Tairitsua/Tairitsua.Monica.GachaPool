@@ -14,12 +14,12 @@ namespace CardPool.Core
         /// <summary>
         /// The whole probability setting of cards which have the same specific rarity.
         /// </summary>
-        public Dictionary<Card.CardRarity, double> RarityProbabilitySetting { get; } = new();
+        public Dictionary<CardRarity, double> RarityProbabilitySetting { get; } = new();
 
         /// <summary>
         /// The specific rarity cards index interval for rarity drawing. 
         /// </summary>
-        public Dictionary<Card.CardRarity, KeyValuePair<int, int>> RarityInterval { get; } = new();
+        public Dictionary<CardRarity, KeyValuePair<int, int>> RarityInterval { get; } = new();
 
         /// <summary>
         /// The all cards in pool. 
@@ -157,7 +157,7 @@ namespace CardPool.Core
         /// <param name="rarity"></param>
         /// <param name="totalProbability"></param>
         /// <returns></returns>
-        public CardsPool SetPoolRarityProbability(Card.CardRarity rarity, double totalProbability)
+        public CardsPool SetPoolRarityProbability(CardRarity rarity, double totalProbability)
         {
             _buildPoolLockSlim.EnterWriteLock();
             try
