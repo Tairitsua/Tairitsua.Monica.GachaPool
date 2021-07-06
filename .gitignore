@@ -11,9 +11,7 @@
 *.userprefs
 
 
-
-#KouData
-KoubotPlugin/TableData
+CardPool/Core/ProbabilityAVLTree.cs
 
 # Build results
 [Dd]ebug/
