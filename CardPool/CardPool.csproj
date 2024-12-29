@@ -2,9 +2,10 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <AssemblyName>CardPool</AssemblyName>
         <RootNamespace>CardPool</RootNamespace>
+	    <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

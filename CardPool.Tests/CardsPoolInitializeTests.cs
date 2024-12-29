@@ -4,66 +4,74 @@ using System.Linq;
 using CardPool.Core;
 using NUnit.Framework;
 
-namespace CardPool.Tests
+namespace CardPool.Tests;
+
+/// <summary>
+/// Tests for CardsPool initialization and setup functionality.
+/// </summary>
+public class CardsPoolInitializeTests
 {
-    public class CardsPoolInitializeTests
+    /// <summary>
+    /// Tests card pool initialization with a single card with zero probability.
+    /// </summary>
+    [Test]
+    public void TestUnexpectedCreate4()
     {
-        // [Test]
-        // public void TestUnexpectedCreate1()
-        // {
-        //     var pool = new CardsPool(new List<Card>());
-        //     pool.InitializePool();
-        //     Console.WriteLine(pool.GetPoolProbabilityInfo());
-        //     Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.Probability));
-        // }
-        [Test]
-        public void TestUnexpectedCreate4()
+        var pool = new CardsPool();
+        var card = new Card<int>(1)
         {
-            var pool = new CardsPool();
-            var card = new Card<int>(1);
-            card.SetProbability = 0;
-            pool.RemainedCard = null;
-            pool.AddCards(card);
-            pool.BuildPool();
-            Console.WriteLine(pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
-        }
-        [Test]
-        public void TestUnexpectedCreate2()
-        {
-            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1);
-            var pool = new CardsPool(oneStarCards);
-            pool.BuildPool();
-            Console.WriteLine(pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
-        }
-        [Test]
-        public void TestUnexpectedCreate3()
-        {
-            var cards = new List<Card> {new Card<int>(1)};
-            var pool = new CardsPool(cards);
-            pool.BuildPool();
-            Console.WriteLine(pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
-        }
-        [Test]
-        public void TestRarityCreate1()
-        {
-            var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
-            var twoStarCards = Card<int>.CreateMultiCards(CardRarity.TwoStar, 11, 12, 13, 14, 15);
-            var singleCard = new Card<int>(100) {SetProbability = 0.005};
-            var twoStarCardsAppend = Card<TimeSpan>.CreateMultiCards(CardRarity.TwoStar,
-                new TimeSpan(1, 0, 0),
-                new TimeSpan(1, 1, 0),
-                new TimeSpan(1, 1, 10));
-            var pool = new CardsPool(oneStarCards, twoStarCards, twoStarCardsAppend);
-            pool.AddCards(singleCard);
-            pool.RemainedCard = null;
-            pool.SetPoolRarityProbability(CardRarity.OneStar, 0.5)
-                .SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
-            pool.BuildPool();
-            Console.WriteLine(pool.GetPoolProbabilityInfo());
-            Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
-        }
+            SetProbability = 0
+        };
+        pool.RemainedCard = null;
+        pool.AddCards(card);
+        pool.BuildPool();
+        Console.WriteLine(pool.GetPoolProbabilityInfo());
+        Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
+    }
+    /// <summary>
+    /// Tests card pool initialization with a single one-star card.
+    /// </summary>
+    [Test]
+    public void TestUnexpectedCreate2()
+    {
+        var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1);
+        var pool = new CardsPool(oneStarCards);
+        pool.BuildPool();
+        Console.WriteLine(pool.GetPoolProbabilityInfo());
+        Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
+    }
+    /// <summary>
+    /// Tests card pool initialization with a single generic card.
+    /// </summary>
+    [Test]
+    public void TestUnexpectedCreate3()
+    {
+        var cards = new List<Card> {new Card<int>(1)};
+        var pool = new CardsPool(cards);
+        pool.BuildPool();
+        Console.WriteLine(pool.GetPoolProbabilityInfo());
+        Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
+    }
+    /// <summary>
+    /// Tests card pool initialization with multiple cards of different rarities and types.
+    /// </summary>
+    [Test]
+    public void TestRarityCreate1()
+    {
+        var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
+        var twoStarCards = Card<int>.CreateMultiCards(CardRarity.TwoStar, 11, 12, 13, 14, 15);
+        var singleCard = new Card<int>(100) {SetProbability = 0.005};
+        var twoStarCardsAppend = Card<TimeSpan>.CreateMultiCards(CardRarity.TwoStar,
+            new TimeSpan(1, 0, 0),
+            new TimeSpan(1, 1, 0),
+            new TimeSpan(1, 1, 10));
+        var pool = new CardsPool(oneStarCards, twoStarCards, twoStarCardsAppend);
+        pool.AddCards(singleCard);
+        pool.RemainedCard = null;
+        pool.SetPoolRarityProbability(CardRarity.OneStar, 0.5)
+            .SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
+        pool.BuildPool();
+        Console.WriteLine(pool.GetPoolProbabilityInfo());
+        Console.WriteLine("sum of all probability: "+pool.Cards.Sum(c=>c.RealProbability));
     }
 }
