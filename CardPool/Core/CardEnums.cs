@@ -5,20 +5,22 @@ namespace CardPool.Core;
 /// <summary>
 /// The rarity of the card.
 /// </summary>
+[Flags]
 public enum CardRarity
 {
-    ZeroStar,
-    OneStar,
-    TwoStar,
-    ThreeStar,
-    FourStar,
-    FiveStar,
-    SixStar,
-    SevenStar,
-    EightStar,
-    NineStar,
-    TenStar
+    ZeroStar = 1 << 0,
+    OneStar = 1 << 1,
+    TwoStar = 1 << 2,
+    ThreeStar = 1 << 3,
+    FourStar = 1 << 4,
+    FiveStar = 1 << 5,
+    SixStar = 1 << 6,
+    SevenStar = 1 << 7,
+    EightStar = 1 << 8,
+    NineStar = 1 << 9,
+    TenStar = 1 << 10
 }
+
 /// <summary>
 /// Represents the various attributes that can be applied to a card.
 /// </summary>

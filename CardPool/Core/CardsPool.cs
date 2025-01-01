@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -18,11 +17,6 @@ public class CardsPool
     /// The whole probability setting of cards which have the same specific rarity.
     /// </summary>
     public Dictionary<CardRarity, double> RarityProbabilitySetting { get; } = new();
-
-    /// <summary>
-    /// The specific rarity cards index interval for rarity drawing. 
-    /// </summary>
-    public Dictionary<CardRarity, KeyValuePair<int, int>> RarityInterval { get; } = new();
 
     /// <summary>
     /// The all cards in pool. 
@@ -79,7 +73,7 @@ public class CardsPool
     }
 
     /// <summary>
-    /// Initializes a new instance of the CardsPool class with initial cards.
+    /// Initializes a new instance of the CardsPool class with initial cards. 
     /// </summary>
     /// <param name="cards">The initial collection of cards.</param>
     public CardsPool(params IEnumerable<Card>?[]? cards)
@@ -214,34 +208,28 @@ public class CardsPool
     /// <param name="remainingProbability">The remaining probability to be assigned to the leftmost card.</param>
     private void CreateBinarySearchLine(double remainingProbability)
     {
-        var searchLine = new KeyValuePair<double, Card>[_cards.Count];
+        if (remainingProbability < 0)
+        {
+            throw new InvalidOperationException("remainingProbability can not be below zero, which means the cards pool total probability is out of 100%");
+        }
+
+        var searchLine = new(double, Card)[_cards.Count];
         double probabilityIndex = 0;
         probabilityIndex += remainingProbability;
 
-        var curRarity = _cards.First().Rarity;
-        var curRarityStartIndex = 0;
         foreach (var (card, index) in _cards.Select((v, i) => (v, i)))
         {
-            searchLine[index] = new KeyValuePair<double, Card>(probabilityIndex, card);
+            searchLine[index] = new ValueTuple<double, Card>(probabilityIndex, card);
             probabilityIndex += card.RealProbability;
-            //record rarity info
-            if (index != 0 && card.Rarity == curRarity) continue;
-            
-            RarityInterval.Add(curRarity, new KeyValuePair<int, int>(curRarityStartIndex, index - 1));
-            curRarityStartIndex = index;
-            curRarity = card.Rarity;
         }
 
-        if (remainingProbability != 0)
+        if (_remainedCard is NothingCard nothingCard)
         {
-            if (_remainedCard is NothingCard nothingCard)
-            {
-                nothingCard.RealProbability = remainingProbability;
-            }
-            else
-            {
-                _remainedCard = _cards.First();
-            }
+            nothingCard.RealProbability = remainingProbability;
+        }
+        else
+        {
+            _remainedCard = _cards.First();
         }
 
         SearchLine = new BinarySearchLine
@@ -270,15 +258,17 @@ public class CardsPool
             {
                 if (wholeProbability == 0) continue;
                 var cardsWithSameRarity = _cards.Where(c => c.Rarity == rarity && c.SetProbability == null).ToList();
-                var count = cardsWithSameRarity.Count;
-                var perProbability = (wholeProbability - cardsWithSameRarity
-                    .Where(c => c.ProbabilityOfSameRarityPool != null)
-                    .Sum(c => c.ProbabilityOfSameRarityPool).Value) / count;
+
+
+                if (cardsWithSameRarity.Count == 0) continue;
+                var perProbability = (wholeProbability - (cardsWithSameRarity
+                    .Where(c => c.RatioAmountSameRarity != null)
+                    .Sum(c => c.RatioAmountSameRarity) ?? 0)) / cardsWithSameRarity.Count;
                 foreach (var card in cardsWithSameRarity)
                 {
-                    if (card.ProbabilityOfSameRarityPool != null)
+                    if (card.RatioAmountSameRarity != null)
                     {
-                        card.RealProbability = wholeProbability * card.ProbabilityOfSameRarityPool.Value;
+                        card.RealProbability = wholeProbability * card.RatioAmountSameRarity.Value;
                     }
                     else
                     {
@@ -395,7 +385,7 @@ public class CardsPool
                     return card;
                 }
 
-                throw new Exception("Need redesign the multi thread frame");//theoretically impossible.
+                throw new Exception("Tell author to redesign the multi thread frame");//theoretically impossible.
             }
             return card;
         }

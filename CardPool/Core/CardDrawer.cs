@@ -94,7 +94,7 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// Draws a random card of type T from the pool.
     /// </summary>
     /// <returns>The drawn card.</returns>
-    public new Card<T> DrawCard()
+    public new Card<T>? DrawCard()
     {
         return InternalDrawCard();
     }
@@ -106,9 +106,9 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// <returns>The drawn card, or null if no cards of the specified rarity exist.</returns>
     public new Card<T>? DrawCard(CardRarity constrainedRarity)
     {
-        if (!Pool.RarityInterval.TryGetValue(constrainedRarity, out var value)) return null;
-        var (x, y) = value;
-        return InternalDrawCard(x, y);
+        var res = base.DrawCard(constrainedRarity);
+        if(res is Card<T> card) return card;
+        return null;
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// <param name="exclusiveCards">Cards to exclude from the draw.</param>
     /// <returns>The drawn card.</returns>
     /// <exception cref="InvalidOperationException">Thrown when unable to draw a card that isn't in the exclusion list after maximum attempts.</exception>
-    public Card<T> DrawCardExcept(params Card<T>[] exclusiveCards)
+    public Card<T>? DrawCardExcept(params Card<T>[] exclusiveCards)
     {
         var attemptTimes = 10000;
         while (attemptTimes-- != 0)

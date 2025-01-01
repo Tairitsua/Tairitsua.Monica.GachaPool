@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace CardPool.Core;
@@ -10,13 +8,13 @@ internal class BinarySearchLine
     /// <summary>
     /// Because the card in search line are all at the right of the index, there is a remaining card at the leftmost.
     /// </summary>
-    public Card LeftMostCard { get; init; }
+    public required Card LeftMostCard { get; init; }
     /// <summary>
     /// Card's probability interval line. Every single probability index are the corresponding card's
     /// probability interval beginning (included for current card) and the previous card's ending
     /// (excluded for previous card).
     /// </summary>
-    public KeyValuePair<double, Card>[] CardsBinarySearchLine  { get; init; }
+    public required (double ProbabilityIndex, Card Card)[] CardsBinarySearchLine  { get; init; }
         
     /// <summary>
     /// Search from all cards.
@@ -37,8 +35,8 @@ internal class BinarySearchLine
     /// <returns></returns>
     public Card Search(double probability, int startIndex, int endIndex)
     {
-        var min = CardsBinarySearchLine.ElementAt(startIndex).Key;
-        var max = CardsBinarySearchLine.ElementAt(endIndex).Key;
+        var min = CardsBinarySearchLine.ElementAt(startIndex).ProbabilityIndex;
+        var max = CardsBinarySearchLine.ElementAt(endIndex).ProbabilityIndex;
         var correctionProbability = probability * (max - min) + min;
         return BinarySearch(correctionProbability, startIndex, endIndex);
     }
@@ -51,17 +49,17 @@ internal class BinarySearchLine
         {
             if (startIndex == endIndex)
             {
-                var curIndexProbability = CardsBinarySearchLine[startIndex].Key;
-                if (curIndexProbability <= probability) return CardsBinarySearchLine.ElementAt(startIndex).Value;
+                var curIndexProbability = CardsBinarySearchLine[startIndex].ProbabilityIndex;
+                if (curIndexProbability <= probability) return CardsBinarySearchLine.ElementAt(startIndex).Card;
                 if (curIndexProbability > probability)
                 {
                     return startIndex == 0 ? 
                         LeftMostCard : 
-                        CardsBinarySearchLine[startIndex-1].Value;
+                        CardsBinarySearchLine[startIndex-1].Card;
                 }
             }
             var middle = (endIndex + startIndex) / 2;
-            if (CardsBinarySearchLine[middle].Key > probability)
+            if (CardsBinarySearchLine[middle].ProbabilityIndex > probability)
             {
                 endIndex = middle - 1;
             }

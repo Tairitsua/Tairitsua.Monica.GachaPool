@@ -6,6 +6,7 @@
         <AssemblyName>CardPool</AssemblyName>
         <RootNamespace>CardPool</RootNamespace>
 	    <Nullable>enable</Nullable>
+      <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

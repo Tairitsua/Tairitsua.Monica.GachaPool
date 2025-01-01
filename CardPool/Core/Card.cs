@@ -10,11 +10,24 @@ public abstract class Card
     /// The card rarity. The global probability will auto generate base on this.
     /// </summary>
     public CardRarity Rarity { get; set; }
+
     /// <summary>
     /// The probability is relative to all the cards which have the same rarity with the card. Only available when
-    /// the Probability property is null.
+    /// the SetProbability property is null.
     /// </summary>
-    public double? ProbabilityOfSameRarityPool { get; set; }
+    public double? RatioAmountSameRarity
+    {
+        get;
+        set
+        {
+            if (value != null && SetProbability != null)
+            {
+                throw new InvalidOperationException("Cannot set RatioAmountSameRarity when SetProbability is not null.");
+            }
+            field = value;
+        }
+    }
+
     /// <summary>
     /// The card real probability relative to the entire card pool.
     /// </summary>
@@ -27,13 +40,20 @@ public abstract class Card
     /// </summary>
     public double? SetProbability
     {
-        get => _setProbability;
+        get;
         set
         {
-            if(value == null) return;
-            _setProbability = value;
-            RealProbability = _setProbability.Value;
-            IsFixedRealProbability = true;
+            field = value;
+            if (field != null)
+            {
+                RealProbability = field.Value;
+                IsFixedRealProbability = true;
+            }
+            else
+            {
+
+                IsFixedRealProbability = false;
+            }
         }
     }
 
@@ -79,9 +99,8 @@ public abstract class Card
     public CardAttributes Attributes { get; private set; }
         
     #region LimitedCard
-    private int _totalCount;
+
     private int _remainCount;
-    private double? _setProbability;
 
     /// <summary>
     /// If set total count, it means the card is limited, and its probability will become zero when this
@@ -89,14 +108,15 @@ public abstract class Card
     /// </summary>
     public int TotalCount
     {
-        get => _totalCount;
+        get;
         set
         {
-            _totalCount = value;
+            field = value;
             _remainCount = value;
             IsLimitedCard = value > 0;
         }
     }
+
     /// <summary>
     /// The limited card remaining count.
     /// </summary>
@@ -176,12 +196,12 @@ public class NothingCard : Card
 /// Represents a generic card with a strongly-typed value.
 /// </summary>
 /// <typeparam name="T">The type of the card's value.</typeparam>
-public class Card<T> : Card
+public class Card<T> : Card where T : notnull
 {
     /// <summary>
     /// Gets or sets the value associated with this card.
     /// </summary>
-    public T Item { get; set; }
+    public T Item { get; }
 
     /// <summary>
     /// Initializes a new instance of the Card{T} class.
@@ -260,7 +280,7 @@ public static class CardExtension
     /// <param name="cards">The collection of cards to process.</param>
     /// <param name="action">The action to perform on each card.</param>
     /// <returns>The original collection of cards.</returns>
-    public static ICollection<Card<T>> EachCardSet<T>(this ICollection<Card<T>> cards, Action<Card<T>> action)
+    public static ICollection<Card<T>> EachCardSet<T>(this ICollection<Card<T>> cards, Action<Card<T>> action) where T : notnull
     {
         foreach (var card in cards)
         {
