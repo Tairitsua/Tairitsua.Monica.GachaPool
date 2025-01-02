@@ -39,8 +39,7 @@ public class CardDrawer
     public Card DrawCard(CardRarity constrainedRarity)
     {
         if (!Pool.RarityInterval.TryGetValue(constrainedRarity, out var value)) return new NothingCard();
-        var (x, y) = value;
-        return InternalDrawCard(x, y);
+        return InternalDrawCard();
     }
         
     /// <summary>
@@ -61,17 +60,15 @@ public class CardDrawer
 
         throw new InvalidOperationException("Attempt to draw card except failed, please reconsider the exclusive card list.");
     }
-        
-        
+
+
     /// <summary>
     /// Internal method for drawing a card from a specific range in the pool.
     /// </summary>
-    /// <param name="startIndex">Optional starting index in the pool.</param>
-    /// <param name="endIndex">Optional ending index in the pool.</param>
     /// <returns>The drawn card.</returns>
-    protected Card InternalDrawCard(int? startIndex = null, int? endIndex = null)
+    protected Card InternalDrawCard()
     {
-        return Pool.InternalDrawCard(startIndex, endIndex);
+        return Pool.InternalDrawCard();
     }
 }
     
@@ -128,17 +125,15 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
 
         throw new InvalidOperationException("Attempt to draw card except failed, please reconsider the exclusive card list.");
     }
-        
-        
+
+
     /// <summary>
     /// Internal method for drawing a card of type T from a specific range in the pool.
     /// </summary>
-    /// <param name="startIndex">Optional starting index in the pool.</param>
-    /// <param name="endIndex">Optional ending index in the pool.</param>
     /// <returns>The drawn card.</returns>
-    private new Card<T>? InternalDrawCard(int? startIndex = null, int? endIndex = null)
+    private new Card<T>? InternalDrawCard()
     {
-        var card = base.InternalDrawCard(startIndex, endIndex);
+        var card = base.InternalDrawCard();
         if (card is Card<T> item) return item;
         return null;
     }

@@ -176,65 +176,32 @@ public class CardsPool
         return this;
     }
 
-    /// <summary>
-    /// Only when all the card in pool has the real probability.
-    /// </summary>
-    /// <param name="removedProbability">Total probability of cards which have been removed from pool</param>
-    private void RemoveCardProbability(double removedProbability)
-    {
-        _buildPoolLockSlim.EnterWriteLock();
-        try
-        {
-            _containLimitedCard = _cards.Any(c => c is {IsLimitedCard: true, IsRemoved: false});
-            //TODO should add probability due to the ratio for each card.
-            var perCardGet = removedProbability / _cards.Count(c => c is {IsFixedRealProbability: false, IsRemoved: false});
-            foreach (var card in _cards)
-            {
-                if(card.IsFixedRealProbability || card.IsRemoved) continue;
-                card.RealProbability += perCardGet;
-            }
-            var remainingProbability = 1 - _cards.Sum(c => c.RealProbability);
-            CreateBinarySearchLine(remainingProbability);
-        }
-        finally
-        {
-            _buildPoolLockSlim.ExitWriteLock();
-        }
-    }
 
     /// <summary>
     /// Create the binary search line for drawing card.
     /// </summary>
     /// <param name="remainingProbability">The remaining probability to be assigned to the leftmost card.</param>
-    private void CreateBinarySearchLine(double remainingProbability)
+    /// <param name="list"></param>
+    private static BinarySearchLine CreateBinarySearchLine(double remainingProbability, List<Card> list)
     {
         if (remainingProbability < 0)
         {
             throw new InvalidOperationException("remainingProbability can not be below zero, which means the cards pool total probability is out of 100%");
         }
 
-        var searchLine = new(double, Card)[_cards.Count];
+        var searchLine = new(double, Card)[list.Count];
         double probabilityIndex = 0;
         probabilityIndex += remainingProbability;
 
-        foreach (var (card, index) in _cards.Select((v, i) => (v, i)))
+        foreach (var (card, index) in list.Select((v, i) => (v, i)))
         {
             searchLine[index] = new ValueTuple<double, Card>(probabilityIndex, card);
             probabilityIndex += card.RealProbability;
         }
 
-        if (_remainedCard is NothingCard nothingCard)
+        return new BinarySearchLine
         {
-            nothingCard.RealProbability = remainingProbability;
-        }
-        else
-        {
-            _remainedCard = _cards.First();
-        }
-
-        SearchLine = new BinarySearchLine
-        {
-            LeftMostCard = _remainedCard,
+            LeftMostCard = list.First(),
             CardsBinarySearchLine = searchLine
         };
     }
@@ -252,12 +219,22 @@ public class CardsPool
             _needBuildPool = false;
             if (_cards == null || _cards.Count == 0) throw new InvalidOperationException("Cards pool is empty");
             _cards = _cards.OrderBy(card => card.Rarity).ToList();
-            _containLimitedCard = _cards.Any(c => c is {IsLimitedCard: true, IsRemoved: false});
+            foreach (var card in _cards)
+            {
+                card.RealProbability = 0;
+                if (card is { IsRemoved: false, SetProbability: { } setProbability })
+                {
+                    card.RealProbability = setProbability;
+                }
+            }
+
+            var validCards = _cards.Where(c => !c.IsRemoved).ToList();
+            _containLimitedCard = validCards.Any(c => c is {IsLimitedCard: true, IsRemoved: false});
             // fulfill all cards with global probability.
             foreach (var (rarity, wholeProbability) in RarityProbabilitySetting)
             {
                 if (wholeProbability == 0) continue;
-                var cardsWithSameRarity = _cards.Where(c => c.Rarity == rarity && c.SetProbability == null).ToList();
+                var cardsWithSameRarity = validCards.Where(c => c.Rarity == rarity && c.SetProbability == null).ToList();
 
 
                 if (cardsWithSameRarity.Count == 0) continue;
@@ -277,10 +254,10 @@ public class CardsPool
                 }
             }
 
-            var remainingProbability = 1 - _cards.Sum(c => c.RealProbability);
+            var remainingProbability = 1 - validCards.Sum(c => c.RealProbability);
             if (remainingProbability < 0)
                 throw new InvalidOperationException("The cards pool total probability is out of 100%");
-            var cardsHaveNotSetProbability = _cards.Where(c => c.SetProbability == null).ToList();
+            var cardsHaveNotSetProbability = validCards.Where(c => c.SetProbability == null).ToList();
             if (cardsHaveNotSetProbability.Count > 0)
             {
                 var perCardProbability = remainingProbability / cardsHaveNotSetProbability.Count;
@@ -291,7 +268,8 @@ public class CardsPool
 
                 remainingProbability = 0;
             }
-            CreateBinarySearchLine(remainingProbability);
+
+            SearchLine = CreateBinarySearchLine(remainingProbability, validCards);
         }
         finally
         {
@@ -322,14 +300,12 @@ public class CardsPool
         if (_remainedCard != null) append = $"[RemainedCard] {_remainedCard}\n";
         return append + string.Join('\n', Cards);
     }
-        
+
     /// <summary>
     /// Internal method for drawing a card from the pool.
     /// </summary>
-    /// <param name="startIndex">Optional starting index for drawing from a specific range.</param>
-    /// <param name="endIndex">Optional ending index for drawing from a specific range.</param>
     /// <returns>The drawn card.</returns>
-    internal Card InternalDrawCard(int? startIndex = null, int? endIndex = null)
+    internal Card InternalDrawCard()
     {
         if (_needBuildPool)
         {
@@ -361,9 +337,8 @@ public class CardsPool
             {
                 randomNum = RandomSeed.NextDouble();
             }
-            var card = startIndex == null || endIndex == null
-                ? SearchLine.Search(randomNum)
-                : SearchLine.Search(randomNum, startIndex.Value, endIndex.Value);
+
+            var card = SearchLine.Search(randomNum);
             if (card.IsLimitedCard)
             {
                 if (card.SuccessGetCard())
@@ -373,9 +348,8 @@ public class CardsPool
                         _buildPoolLockSlim.EnterWriteLock();
                         try
                         {
-                            var tmp = card.RealProbability;
                             card.IsRemoved = true;
-                            RemoveCardProbability(tmp);
+                            _needBuildPool = true;
                         }
                         finally
                         {

@@ -25,23 +25,7 @@ internal class BinarySearchLine
     {
         return BinarySearch(probability, 0, CardsBinarySearchLine.Length - 1);
     }
-    /// <summary>
-    /// Search in specific index interval.
-    /// </summary>
-    /// <param name="probability">The probability starts from included 0 to excluded 1, and it will automatically
-    /// map to corresponding probability in the specific index interval</param>
-    /// <param name="startIndex"></param>
-    /// <param name="endIndex"></param>
-    /// <returns></returns>
-    public Card Search(double probability, int startIndex, int endIndex)
-    {
-        var min = CardsBinarySearchLine.ElementAt(startIndex).ProbabilityIndex;
-        var max = CardsBinarySearchLine.ElementAt(endIndex).ProbabilityIndex;
-        var correctionProbability = probability * (max - min) + min;
-        return BinarySearch(correctionProbability, startIndex, endIndex);
-    }
-
-
+ 
     private Card BinarySearch(double probability, int startIndex, int endIndex)
     {
         if (startIndex > endIndex) throw new Exception("startIndex is larger than endIndex");

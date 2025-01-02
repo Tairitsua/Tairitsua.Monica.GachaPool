@@ -35,46 +35,11 @@ public abstract class Card
 
     /// <summary>
     /// If not set, the real probability will auto generate according to rarity and the whole cards pool. The probability
-    /// is relative to the entire card pool and not to the corresponding rarity cards. When set the probability, it also
-    /// auto set the IsFixedRealProbability property true, means the real probability will be fixed forever.
+    /// is relative to the entire card pool and not to the corresponding rarity cards.
     /// </summary>
-    public double? SetProbability
-    {
-        get;
-        set
-        {
-            field = value;
-            if (field != null)
-            {
-                RealProbability = field.Value;
-                IsFixedRealProbability = true;
-            }
-            else
-            {
+    public double? SetProbability { get; set; }
 
-                IsFixedRealProbability = false;
-            }
-        }
-    }
 
-    /// <summary>
-    /// Indicate that the card's real probability will not change even if the probability of some cards in pool changed. 
-    /// </summary>
-    public bool IsFixedRealProbability
-    {
-        get => (Attributes & CardAttributes.FixedRealProbability) != 0;
-        set
-        {
-            if (value == false)
-            {
-                Attributes &= ~CardAttributes.FixedRealProbability;
-            }
-            else
-            {
-                Attributes |= CardAttributes.FixedRealProbability;
-            }
-        }
-    }
     /// <summary>
     /// Indicate that the card has been removed and will not appear at card pool.
     /// (or to say the probability has becomes zero)
