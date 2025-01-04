@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CardPool.Core;
 
-internal class BinarySearchLine
+public class BinarySearchLine
 {
     /// <summary>
     /// Because the card in search line are all at the right of the index, there is a remaining card at the leftmost.

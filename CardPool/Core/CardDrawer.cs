@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace CardPool.Core;
 
@@ -38,27 +40,36 @@ public class CardDrawer
     /// <returns>The drawn card, or null if no cards of the specified rarity exist.</returns>
     public Card DrawCard(CardRarity constrainedRarity)
     {
-        if (!Pool.RarityInterval.TryGetValue(constrainedRarity, out var value)) return new NothingCard();
-        return InternalDrawCard();
+        var availableCards = Pool.Cards.Where(card => card.Rarity == constrainedRarity && !card.IsRemoved).ToList();
+
+        return InternalDrawCard(availableCards);
     }
+    
+    /// <summary>
+    /// Draws a random card from the pool, limited to the specified included cards.
+    /// </summary>
+    /// <param name="includedCards">The cards to include in the draw.</param>
+    /// <returns>The drawn card, or null if no cards from the included set are available.</returns>
+    public Card DrawCardInclude(params Card[] includedCards)
+    {
+        var includedSet = new HashSet<Card>(includedCards);
+        var availableCards = Pool.Cards.Where(card => includedSet.Contains(card) && !card.IsRemoved).ToList();
+        return InternalDrawCard(availableCards);
+    }
+    
+    
+    
         
     /// <summary>
     /// Draws a random card from the pool, excluding specified cards.
     /// </summary>
     /// <param name="exclusiveCards">Cards to exclude from the draw.</param>
     /// <returns>The drawn card.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when unable to draw a card that isn't in the exclusion list after maximum attempts.</exception>
     public Card DrawCardExcept(params Card[] exclusiveCards)
     {
-        //TODO should test whether it really can draw a card from the pool.
-        var attemptTimes = 10000;
-        while (attemptTimes-- != 0)
-        {
-            var drawn=  DrawCard();
-            if (!exclusiveCards.Contains(drawn)) return drawn;
-        }
-
-        throw new InvalidOperationException("Attempt to draw card except failed, please reconsider the exclusive card list.");
+        var excludedSet = new HashSet<Card>(exclusiveCards);
+        var availableCards = Pool.Cards.Where(card => !excludedSet.Contains(card) && !card.IsRemoved).ToList();
+        return InternalDrawCard(availableCards);
     }
 
 
@@ -66,9 +77,11 @@ public class CardDrawer
     /// Internal method for drawing a card from a specific range in the pool.
     /// </summary>
     /// <returns>The drawn card.</returns>
-    protected Card InternalDrawCard()
+    protected Card InternalDrawCard(List<Card>? customCards = null)
     {
-        return Pool.InternalDrawCard();
+        return customCards != null ? 
+            Pool.InternalDrawCard(CardsPool.CreateBinarySearchLine(customCards)) :
+            Pool.InternalDrawCard();
     }
 }
     
@@ -93,7 +106,7 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// <returns>The drawn card.</returns>
     public new Card<T>? DrawCard()
     {
-        return InternalDrawCard();
+        return base.DrawCard() as Card<T>;
     }
 
     /// <summary>
@@ -103,11 +116,24 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// <returns>The drawn card, or null if no cards of the specified rarity exist.</returns>
     public new Card<T>? DrawCard(CardRarity constrainedRarity)
     {
-        var res = base.DrawCard(constrainedRarity);
-        if(res is Card<T> card) return card;
-        return null;
+        return base.DrawCard(constrainedRarity) as Card<T>;
     }
 
+    /// <summary>
+    /// Draws a random card of type T from the pool, including only the specified cards.
+    /// </summary>
+    /// <param name="includedCards">The cards to include in the draw.</param>
+    /// <returns>The drawn card, or null if no cards from the specified list can be drawn.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when unable to draw a card from the inclusion list after maximum attempts.
+    /// </exception>
+    public Card<T>? DrawCardInclude(params Card<T>[] includedCards)
+    {
+        return DrawCardInclude(includedCards.Select(Card (p) => p).ToArray()) as Card<T>;
+    }
+    
+    
+    
     /// <summary>
     /// Draws a random card of type T from the pool, excluding specified cards.
     /// </summary>
@@ -116,27 +142,16 @@ public class CardDrawer<T> : CardDrawer where T : Card<T>
     /// <exception cref="InvalidOperationException">Thrown when unable to draw a card that isn't in the exclusion list after maximum attempts.</exception>
     public Card<T>? DrawCardExcept(params Card<T>[] exclusiveCards)
     {
-        var attemptTimes = 10000;
-        while (attemptTimes-- != 0)
-        {
-            var drawn=  DrawCard();
-            if (!exclusiveCards.Contains(drawn)) return drawn;
-        }
-
-        throw new InvalidOperationException("Attempt to draw card except failed, please reconsider the exclusive card list.");
+        return DrawCardExcept(exclusiveCards.Select(Card (p) => p).ToArray()) as Card<T>;
     }
 
 
-    /// <summary>
-    /// Internal method for drawing a card of type T from a specific range in the pool.
-    /// </summary>
-    /// <returns>The drawn card.</returns>
-    private new Card<T>? InternalDrawCard()
-    {
-        var card = base.InternalDrawCard();
-        if (card is Card<T> item) return item;
-        return null;
-    }
-
-        
+    ///// <summary>
+    ///// Internal method for drawing a card of type T from a specific range in the pool.
+    ///// </summary>
+    ///// <returns>The drawn card.</returns>
+    //private new Card<T>? InternalDrawCard(List<Card>? customCards = null)
+    //{
+    //    return base.InternalDrawCard(customCards) as Card<T>;
+    //}
 }

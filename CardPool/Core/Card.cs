@@ -20,7 +20,7 @@ public abstract class Card
         get;
         set
         {
-            if (value != null && SetProbability != null)
+            if (value != null && PresetProbability != null)
             {
                 throw new InvalidOperationException("Cannot set RatioAmountSameRarity when SetProbability is not null.");
             }
@@ -37,7 +37,7 @@ public abstract class Card
     /// If not set, the real probability will auto generate according to rarity and the whole cards pool. The probability
     /// is relative to the entire card pool and not to the corresponding rarity cards.
     /// </summary>
-    public double? SetProbability { get; set; }
+    public double? PresetProbability { get; set; }
 
 
     /// <summary>

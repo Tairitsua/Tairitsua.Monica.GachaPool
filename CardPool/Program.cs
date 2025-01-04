@@ -75,7 +75,7 @@ public static class Program
     {
         var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar,
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        oneStarCards[4].SetProbability = 0.000001;
+        oneStarCards[4].PresetProbability = 0.000001;
         oneStarCards[5].TotalCount = 50000;
         _pool = new CardsPool(oneStarCards);
     }

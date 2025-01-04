@@ -20,7 +20,7 @@ public class CardsPoolInitializeTests
         var pool = new CardsPool();
         var card = new Card<int>(1)
         {
-            SetProbability = 0
+            PresetProbability = 0
         };
         pool.RemainedCard = null;
         pool.AddCards(card);
@@ -60,7 +60,7 @@ public class CardsPoolInitializeTests
     {
         var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
         var twoStarCards = Card<int>.CreateMultiCards(CardRarity.TwoStar, 11, 12, 13, 14, 15);
-        var singleCard = new Card<int>(100) {SetProbability = 0.005};
+        var singleCard = new Card<int>(100) {PresetProbability = 0.005};
         var twoStarCardsAppend = Card<TimeSpan>.CreateMultiCards(CardRarity.TwoStar,
             new TimeSpan(1, 0, 0),
             new TimeSpan(1, 1, 0),
