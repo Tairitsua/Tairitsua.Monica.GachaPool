@@ -8,7 +8,7 @@ namespace CardPool.Core;
 /// <summary>
 /// Represents a pool of cards with probability-based drawing functionality.
 /// </summary>
-public class CardsPool
+public class CardsPool : ICardsPool
 {
     private Card? _remainedCard;
     private static readonly Random RandomSeed = new();
@@ -155,25 +155,24 @@ public class CardsPool
     #endregion
         
     /// <summary>
-    /// Set the given rarity total probability, and the probability will arrange to corresponding card according to
-    /// each set. (Default is dividing equally)
+    /// Sets the probability for a specific card rarity in the pool.
     /// </summary>
-    /// <param name="rarity"></param>
-    /// <param name="totalProbability"></param>
-    /// <returns></returns>
-    public CardsPool SetPoolRarityProbability(CardRarity rarity, double totalProbability)
+    /// <param name="rarity">The rarity to set probability for.</param>
+    /// <param name="probability">The probability value to set.</param>
+    /// <returns>The current instance for method chaining.</returns>
+    public ICardsPool SetPoolRarityProbability(CardRarity rarity, double probability)
     {
         _buildPoolLockSlim.EnterWriteLock();
         try
         {
             _needBuildPool = true;
-            RarityProbabilitySetting[rarity] = totalProbability;
+            RarityProbabilitySetting[rarity] = probability;
+            return this;
         }
         finally
         {
             _buildPoolLockSlim.ExitWriteLock();
         }
-        return this;
     }
 
 
@@ -321,8 +320,9 @@ public class CardsPool
     /// <summary>
     /// Internal method for drawing a card from the pool.
     /// </summary>
+    /// <param name="customSearchLine">Optional custom search line for drawing.</param>
     /// <returns>The drawn card.</returns>
-    internal Card InternalDrawCard(BinarySearchLine? customSearchLine = null)
+    public Card InternalDrawCard(BinarySearchLine? customSearchLine = null)
     {
         EnsureBuildPool();
 

@@ -8,12 +8,12 @@ namespace CardPool.Core;
 /// <summary>
 /// Provides functionality for drawing cards from a card pool.
 /// </summary>
-public class CardDrawer
+public class CardDrawer : ICardDrawer
 {
     /// <summary>
     /// Gets the card pool associated with this drawer.
     /// </summary>
-    public CardsPool Pool { get; }
+    public ICardsPool Pool { get; }
     /// <summary>
     /// Gets the statistician responsible for tracking and analyzing card draw statistics.
     /// </summary>
@@ -21,13 +21,13 @@ public class CardDrawer
     /// The <see cref="CardDrawStatistician"/> provides functionality to record and retrieve
     /// statistical data related to card draws from the associated card pool.
     /// </remarks>
-    public CardDrawStatistician Statistician { get; }
+    public ICardDrawStatistician Statistician { get; }
 
     /// <summary>
     /// Initializes a new instance of the CardDrawer class.
     /// </summary>
     /// <param name="pool">The card pool to draw from.</param>
-    public CardDrawer(CardsPool pool)
+    public CardDrawer(ICardsPool pool)
     {
         Pool = pool;
         Statistician = new CardDrawStatistician(Pool);
@@ -100,13 +100,13 @@ public class CardDrawer
 /// Generic version of CardDrawer that provides strongly-typed card drawing functionality.
 /// </summary>
 /// <typeparam name="T">The type of card to draw.</typeparam>
-public class CardDrawer<T> : CardDrawer where T : Card<T>
+public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : Card<T>
 {
     /// <summary>
     /// Initializes a new instance of the generic CardDrawer class.
     /// </summary>
     /// <param name="pool">The card pool to draw from.</param>
-    public CardDrawer(CardsPool pool) : base(pool)
+    public CardDrawer(ICardsPool pool) : base(pool)
     {
        
     }

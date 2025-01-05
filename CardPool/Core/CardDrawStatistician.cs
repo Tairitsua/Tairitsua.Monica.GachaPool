@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace CardPool.Core;
 
-public class CardDrawStatistician
+public class CardDrawStatistician : ICardDrawStatistician
 {
-    private readonly CardsPool _pool;
+    private readonly ICardsPool _pool;
     private int _recordedTimes;
     public int RecordedTimes => _recordedTimes;
     public Dictionary<Card, StrongBox<int>> CardRecordDict { get; }
@@ -17,7 +17,7 @@ public class CardDrawStatistician
     /// Create a statistician to see the cards draw circumstance.
     /// </summary>
     /// <param name="pool"></param>
-    public CardDrawStatistician(CardsPool pool)
+    public CardDrawStatistician(ICardsPool pool)
     {
         _pool = pool;
         CardRecordDict = new Dictionary<Card, StrongBox<int>>();
