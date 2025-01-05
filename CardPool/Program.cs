@@ -74,10 +74,12 @@ public static class Program
     public static void BasicSetup()
     {
         var oneStarCards = Card<int>.CreateMultiCards(CardRarity.OneStar,
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            1, 2, 3, 4, 5);
+        var twoStarCards = Card<int>.CreateMultiCards(CardRarity.TwoStar, 6, 7, 8, 9, 10);
         oneStarCards[4].PresetProbability = 0.000001;
-        oneStarCards[5].TotalCount = 50000;
-        _pool = new CardsPool(oneStarCards);
+        oneStarCards[1].TotalCount = 50000;
+        _pool = new CardsPool(oneStarCards, twoStarCards);
+        _pool.SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
     }
         
         
@@ -88,7 +90,6 @@ public static class Program
     {
         BasicSetup();
         Console.WriteLine(_pool.GetPoolProbabilityInfo());
-        var statistician = new CardDrawStatistician(_pool);
         var drawer = new CardDrawer(_pool);
         var writer = new ConsoleWriteUpdater();
         var sleepTime = 1000;
@@ -99,7 +100,6 @@ public static class Program
             while (true)
             {
                 var drawOutCard = drawer.DrawCard();
-                statistician.RecordDrawnCard(drawOutCard);
             }
         }
 
@@ -110,9 +110,9 @@ public static class Program
         while (true)
         {
             Thread.Sleep(sleepTime);
-            var perMsGetCard = (statistician.RecordedTimes - previousDrawTimes) / sleepTime;
-            previousDrawTimes = statistician.RecordedTimes;
-            writer.Update($"{threadCount} threads 1ms could draw {perMsGetCard} cards\n{statistician.GetCurrentDescription()}");
+            var perMsGetCard = (drawer.Statistician.RecordedTimes - previousDrawTimes) / sleepTime;
+            previousDrawTimes = drawer.Statistician.RecordedTimes;
+            writer.Update($"{threadCount} threads 1ms could draw {perMsGetCard} cards\n{drawer.Statistician.GetReportTableString()}");
         }
     }
 
@@ -123,7 +123,6 @@ public static class Program
     {
         BasicSetup();
         Console.WriteLine(_pool.GetPoolProbabilityInfo());
-        var statistician = new CardDrawStatistician(_pool);
         var drawer = new CardDrawer(_pool);
         var writer = new ConsoleWriteUpdater();
         var times = 100000;
@@ -136,11 +135,10 @@ public static class Program
             {
                 var drawOutCard = drawer.DrawCard();
                 // var drawOutCard = drawer.DrawCardExcept(new Card<int>(1), new Card<int>(2));
-                statistician.RecordDrawnCard(drawOutCard);
             }
 
             stopwatch.Stop();
-            writer.Update($"draw {times} cards take {stopwatch.ElapsedMilliseconds}ms\n{statistician.GetCurrentDescription()}");
+            writer.Update($"draw {times} cards take {stopwatch.ElapsedMilliseconds}ms\n{drawer.Statistician.GetReportTableString()}");
         }
     }
 }

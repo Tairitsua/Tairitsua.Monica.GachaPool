@@ -13,7 +13,15 @@ public class CardDrawer
     /// <summary>
     /// Gets the card pool associated with this drawer.
     /// </summary>
-    protected CardsPool Pool { get; }
+    public CardsPool Pool { get; }
+    /// <summary>
+    /// Gets the statistician responsible for tracking and analyzing card draw statistics.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="CardDrawStatistician"/> provides functionality to record and retrieve
+    /// statistical data related to card draws from the associated card pool.
+    /// </remarks>
+    public CardDrawStatistician Statistician { get; }
 
     /// <summary>
     /// Initializes a new instance of the CardDrawer class.
@@ -22,6 +30,7 @@ public class CardDrawer
     public CardDrawer(CardsPool pool)
     {
         Pool = pool;
+        Statistician = new CardDrawStatistician(Pool);
     }
 
     /// <summary>
@@ -79,9 +88,11 @@ public class CardDrawer
     /// <returns>The drawn card.</returns>
     protected Card InternalDrawCard(List<Card>? customCards = null)
     {
-        return customCards != null ? 
-            Pool.InternalDrawCard(CardsPool.CreateBinarySearchLine(customCards)) :
-            Pool.InternalDrawCard();
+        var card = customCards != null
+            ? Pool.InternalDrawCard(CardsPool.CreateBinarySearchLine(customCards))
+            : Pool.InternalDrawCard();
+        Statistician.RecordDrawnCard(card);
+        return card;
     }
 }
     

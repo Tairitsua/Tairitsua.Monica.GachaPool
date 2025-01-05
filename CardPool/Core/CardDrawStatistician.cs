@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,7 +12,7 @@ public class CardDrawStatistician
     private int _recordedTimes;
     public int RecordedTimes => _recordedTimes;
     public Dictionary<Card, StrongBox<int>> CardRecordDict { get; }
-        
+
     /// <summary>
     /// Create a statistician to see the cards draw circumstance.
     /// </summary>
@@ -39,18 +38,25 @@ public class CardDrawStatistician
         Interlocked.Increment(ref _recordedTimes);
     }
 
-    public string GetCurrentDescription()
+    public string GetReportTableString()
     {
         var des = new StringBuilder();
-        des.Append($"sum of all probability: {CardRecordDict.Keys.Sum(c => c.RealProbability)}\n");
-        des.Append($"total drawn times: {_recordedTimes}\n");
+        des.AppendLine($"sum of all probability: {CardRecordDict.Keys.Sum(c => c.RealProbability)}");
+        des.AppendLine($"total drawn times: {_recordedTimes}");
+        des.AppendLine(new string('-', 80));
+        des.AppendLine($"{"CardName",-20}{"ExpectProb",-15}{"Rarity",-10}{"DrawnCount",-15}{"ExactProb",-15}");
+        des.AppendLine(new string('-', 80));
         foreach (var (card, getTimes) in CardRecordDict)
         {
             var times = getTimes.Value;
-            des.Append($"{card}".PadRight(25) + $"{times} - {times / (double) _recordedTimes:P4}".PadLeft(20));
-            des.Append('\n');
+            des.AppendLine($"{card.GetCardName().PadRight(20)}" +
+                           $"{card.RealProbability.ToString("P4").PadRight(15)}" +
+                           $"{card.Rarity.ToString().PadRight(10)}" +
+                           $"{times.ToString().PadRight(15)}" +
+                           $"{(times / (double)_recordedTimes).ToString("P4").PadRight(15)}");
         }
-            
+        des.AppendLine(new string('-', 80));
         return des.ToString().TrimEnd('\n');
     }
+
 }

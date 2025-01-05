@@ -127,6 +127,7 @@ public abstract class Card
     }
 
         
+    public abstract string GetCardName();
 }
     
 /// <summary>
@@ -154,7 +155,12 @@ public class NothingCard : Card
     }
     public override string ToString()
     {
-        return $"Nothing ———— {base.ToString()}";
+        return $"{GetCardName()} ———— {base.ToString()}";
+    }
+
+    public override string GetCardName()
+    {
+        return "Nothing";
     }
 }
 /// <summary>
@@ -166,15 +172,15 @@ public class Card<T> : Card where T : notnull
     /// <summary>
     /// Gets or sets the value associated with this card.
     /// </summary>
-    public T Item { get; }
+    public T CardInfo { get; }
 
     /// <summary>
     /// Initializes a new instance of the Card{T} class.
     /// </summary>
-    /// <param name="item">The value to associate with this card.</param>
-    public Card(T item)
+    /// <param name="cardInfo">The value to associate with this card.</param>
+    public Card(T cardInfo)
     {
-        Item = item;
+        CardInfo = cardInfo;
     }
 
     /// <summary>
@@ -202,7 +208,7 @@ public class Card<T> : Card where T : notnull
     {
         if (obj is Card<T> card)
         {
-            return EqualityComparer<T>.Default.Equals(card.Item, Item);
+            return EqualityComparer<T>.Default.Equals(card.CardInfo, CardInfo);
         }
 
         return false;
@@ -210,12 +216,17 @@ public class Card<T> : Card where T : notnull
         
     public override int GetHashCode()
     {
-        return EqualityComparer<T>.Default.GetHashCode(Item);
+        return EqualityComparer<T>.Default.GetHashCode(CardInfo);
     }
 
     public override string ToString()
     {
-        return $"{Item.ToString()} ———— {base.ToString()}";
+        return $"{GetCardName()} ———— {base.ToString()}";
+    }
+
+    public override string GetCardName()
+    {
+        return CardInfo.ToString() ?? "UNF";
     }
 }
 

@@ -288,29 +288,35 @@ public class CardsPool
         }
     }
 
+    private void EnsureBuildPool()
+    {
+        if (!_needBuildPool) return;
+        _buildPoolLockSlim.EnterWriteLock();
+        try
+        {
+            if(_needBuildPool) BuildPool();
+        }
+        finally
+        {
+            _buildPoolLockSlim.ExitWriteLock();
+        }
+    }
+    
     /// <summary>
     /// Gets a string representation of the pool's probability information.
     /// </summary>
     /// <returns>A string containing the pool's probability information.</returns>
     public string GetPoolProbabilityInfo()
     {
-        if (_needBuildPool)
-        {
-            _buildPoolLockSlim.EnterWriteLock();
-            try
-            {
-                if(_needBuildPool) BuildPool();
-            }
-            finally
-            {
-                _buildPoolLockSlim.ExitWriteLock();
-            }
-        }
-
-        var append = $"sum of all probability: {Cards.Sum(c => c.RealProbability)}\n";
-        if (_remainedCard != null) append = $"[RemainedCard] {_remainedCard}\n";
-        return append + string.Join('\n', Cards);
+        EnsureBuildPool();
+        var header = $"{"CardName",-20}{"ExpectProb",-15}{"Rarity",-10}\n";
+        var separator = new string('-', 45) + "\n";
+        var rows = Cards.Select(c => $"{c.GetCardName(),-20}{c.RealProbability,-15:P4}{c.Rarity,-10}");
+        var remainedCardInfo = _remainedCard != null ? $"[RemainedCard] {_remainedCard}\n" : string.Empty;
+        return remainedCardInfo + header + separator + string.Join("\n", rows) + "\n" +
+               separator + $"sum of all probability: {Cards.Sum(c => c.RealProbability)}";
     }
+
 
     /// <summary>
     /// Internal method for drawing a card from the pool.
@@ -318,18 +324,7 @@ public class CardsPool
     /// <returns>The drawn card.</returns>
     internal Card InternalDrawCard(BinarySearchLine? customSearchLine = null)
     {
-        if (_needBuildPool)
-        {
-            _buildPoolLockSlim.EnterWriteLock();
-            try
-            {
-                if(_needBuildPool) BuildPool();
-            }
-            finally
-            {
-                _buildPoolLockSlim.ExitWriteLock();
-            }
-        }
+        EnsureBuildPool();
 
         var useUpgradeable = _containLimitedCard;
         if (useUpgradeable)
