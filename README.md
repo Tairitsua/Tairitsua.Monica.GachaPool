@@ -2,6 +2,10 @@
 
 CardPool is a flexible and efficient .NET library for managing card pools with probability-based drawing mechanisms. It provides a robust foundation for implementing card-drawing systems in games or any application requiring probability-based item selection.
 
+## Language
+
+English | [简体中文](README.zh_CN.md)
+
 ## Features
 
 - 🎯 Probability-based card drawing system
