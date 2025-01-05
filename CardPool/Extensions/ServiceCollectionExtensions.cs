@@ -1,4 +1,3 @@
-using CardPool.Conventions;
 using CardPool.Implements;
 using CardPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CardPool.Extensions;
 
 /// <summary>
-/// Provides extension methods for registering CardPool services with dependency injection.
+/// Extension methods for configuring CardPool services in an IServiceCollection.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
@@ -14,28 +13,11 @@ public static class ServiceCollectionExtensions
     /// Adds CardPool services to the specified IServiceCollection.
     /// </summary>
     /// <param name="services">The IServiceCollection to add services to.</param>
-    /// <returns>The IServiceCollection for chaining.</returns>
+    /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
     public static IServiceCollection AddCardPool(this IServiceCollection services)
     {
-        services.AddScoped<ICardsPool, CardsPool>();
-        services.AddScoped<ICardDrawer, CardDrawer>();
-        services.AddScoped<ICardDrawStatistician, CardDrawStatistician>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds CardPool services with generic card drawer to the specified IServiceCollection.
-    /// </summary>
-    /// <typeparam name="T">The type of card to use with the generic card drawer.</typeparam>
-    /// <param name="services">The IServiceCollection to add services to.</param>
-    /// <returns>The IServiceCollection for chaining.</returns>
-    public static IServiceCollection AddCardPool<T>(this IServiceCollection services) where T : Card<T>
-    {
-        services.AddScoped<ICardsPool, CardsPool>();
-        services.AddScoped<ICardDrawer<T>, CardDrawer<T>>();
-        services.AddScoped<ICardDrawStatistician, CardDrawStatistician>();
-
+        services.AddSingleton<ICardPoolManager, CardPoolManager>();
+        services.AddSingleton<ICardsPoolLoader, CardsPoolByMemoryProvider>();
         return services;
     }
 }
