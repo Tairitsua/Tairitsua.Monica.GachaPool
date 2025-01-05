@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using CardPool.Conventions;
+using CardPool.Interfaces;
 
-namespace CardPool.Core;
+namespace CardPool.Implements;
 
 /// <summary>
 /// Provides functionality for drawing cards from a card pool.
@@ -53,7 +54,7 @@ public class CardDrawer : ICardDrawer
 
         return InternalDrawCard(availableCards);
     }
-    
+
     /// <summary>
     /// Draws a random card from the pool, limited to the specified included cards.
     /// </summary>
@@ -65,10 +66,10 @@ public class CardDrawer : ICardDrawer
         var availableCards = Pool.Cards.Where(card => includedSet.Contains(card) && !card.IsRemoved).ToList();
         return InternalDrawCard(availableCards);
     }
-    
-    
-    
-        
+
+
+
+
     /// <summary>
     /// Draws a random card from the pool, excluding specified cards.
     /// </summary>
@@ -95,7 +96,7 @@ public class CardDrawer : ICardDrawer
         return card;
     }
 }
-    
+
 /// <summary>
 /// Generic version of CardDrawer that provides strongly-typed card drawing functionality.
 /// </summary>
@@ -108,7 +109,7 @@ public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : Card<T>
     /// <param name="pool">The card pool to draw from.</param>
     public CardDrawer(ICardsPool pool) : base(pool)
     {
-       
+
     }
 
     /// <summary>
@@ -142,9 +143,9 @@ public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : Card<T>
     {
         return DrawCardInclude(includedCards.Select(Card (p) => p).ToArray()) as Card<T>;
     }
-    
-    
-    
+
+
+
     /// <summary>
     /// Draws a random card of type T from the pool, excluding specified cards.
     /// </summary>

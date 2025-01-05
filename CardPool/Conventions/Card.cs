@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace CardPool.Core;
+namespace CardPool.Conventions;
 
 public abstract class Card
 {
@@ -60,9 +60,9 @@ public abstract class Card
             }
         }
     }
-        
+
     public CardAttributes Attributes { get; private set; }
-        
+
     #region LimitedCard
 
     private int _remainCount;
@@ -89,7 +89,7 @@ public abstract class Card
     /// <summary>
     /// This property will auto turn to true when you set the card TotalCount property.
     /// </summary>
-    public bool IsLimitedCard 
+    public bool IsLimitedCard
     {
         get => (Attributes & CardAttributes.Limited) != 0;
         private set
@@ -117,19 +117,19 @@ public abstract class Card
     }
 
     #endregion
-        
-        
-        
-        
+
+
+
+
     public override string ToString()
     {
         return $"{RealProbability:P5} [{Rarity}]";
     }
 
-        
+
     public abstract string GetCardName();
 }
-    
+
 /// <summary>
 /// When a cards pool placed all valid card, the rest probability will turn to a nothing card.
 /// </summary>
@@ -137,7 +137,7 @@ public class NothingCard : Card
 {
     public NothingCard()
     {
-            
+
     }
     public NothingCard(double remainRealProbability)
     {
@@ -213,7 +213,7 @@ public class Card<T> : Card where T : notnull
 
         return false;
     }
-        
+
     public override int GetHashCode()
     {
         return EqualityComparer<T>.Default.GetHashCode(CardInfo);

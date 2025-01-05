@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using CardPool.Conventions;
+using CardPool.Interfaces;
 
-namespace CardPool.Core;
+namespace CardPool.Implements;
 
 /// <summary>
 /// Represents a pool of cards with probability-based drawing functionality.
@@ -24,9 +26,9 @@ public class CardsPool : ICardsPool
     public IReadOnlyList<Card> Cards => _cards;
 
     private bool _needBuildPool;
-        
+
     private readonly ReaderWriterLockSlim _buildPoolLockSlim = new(LockRecursionPolicy.SupportsRecursion);
-        
+
     /// <summary>
     /// The remaining probability card, which usually means the worst lucky and gets nothing, but you can set it as a
     /// specific card. If not set(means remained card is null), the default remained card will be the first least probability card (leftmost card).
@@ -48,7 +50,7 @@ public class CardsPool : ICardsPool
             {
                 _buildPoolLockSlim.ExitWriteLock();
             }
-                
+
         }
     }
 
@@ -69,7 +71,7 @@ public class CardsPool : ICardsPool
     /// </summary>
     public CardsPool()
     {
-            
+
     }
 
     /// <summary>
@@ -82,7 +84,7 @@ public class CardsPool : ICardsPool
         if (cards == null) return;
         foreach (var cardList in cards)
         {
-            if(cardList == null) continue;
+            if (cardList == null) continue;
             _cards.AddRange(cardList.ToList());
         }
     }
@@ -110,7 +112,7 @@ public class CardsPool : ICardsPool
             _buildPoolLockSlim.ExitWriteLock();
         }
     }
-        
+
     /// <summary>
     /// Adds one or more cards to the pool.
     /// </summary>
@@ -143,7 +145,7 @@ public class CardsPool : ICardsPool
         try
         {
             _needBuildPool = true;
-            if(cards == null) return;
+            if (cards == null) return;
             _cards.AddRange(cards);
         }
         finally
@@ -153,7 +155,7 @@ public class CardsPool : ICardsPool
     }
 
     #endregion
-        
+
     /// <summary>
     /// Sets the probability for a specific card rarity in the pool.
     /// </summary>
@@ -190,7 +192,7 @@ public class CardsPool : ICardsPool
             sum = 1;
         }
 
-        var searchLine = new(double, Card)[list.Count];
+        var searchLine = new (double, Card)[list.Count];
         double probabilityIndex = 0;
         foreach (var (card, index) in list.Select((v, i) => (v, i)))
         {
@@ -228,7 +230,7 @@ public class CardsPool : ICardsPool
             }
 
             var validCards = _cards.Where(c => !c.IsRemoved).ToList();
-            _containLimitedCard = validCards.Any(c => c is {IsLimitedCard: true, IsRemoved: false});
+            _containLimitedCard = validCards.Any(c => c is { IsLimitedCard: true, IsRemoved: false });
             // fulfill all cards with global probability.
             foreach (var (rarity, wholeProbability) in RarityProbabilitySetting)
             {
@@ -252,7 +254,7 @@ public class CardsPool : ICardsPool
                     }
                 }
             }
-            
+
             var remainingProbability = 1 - validCards.Sum(c => c.RealProbability);
             if (remainingProbability < 0)
             {
@@ -269,7 +271,7 @@ public class CardsPool : ICardsPool
             }
             else
             {
-                if (_remainedCard is {} remainedCard)
+                if (_remainedCard is { } remainedCard)
                 {
                     remainedCard.RealProbability += remainingProbability;
                     if (!validCards.Contains(remainedCard))
@@ -278,7 +280,7 @@ public class CardsPool : ICardsPool
                     }
                 }
             }
-            
+
             SearchLine = CreateBinarySearchLine(validCards);
         }
         finally
@@ -293,14 +295,14 @@ public class CardsPool : ICardsPool
         _buildPoolLockSlim.EnterWriteLock();
         try
         {
-            if(_needBuildPool) BuildPool();
+            if (_needBuildPool) BuildPool();
         }
         finally
         {
             _buildPoolLockSlim.ExitWriteLock();
         }
     }
-    
+
     /// <summary>
     /// Gets a string representation of the pool's probability information.
     /// </summary>

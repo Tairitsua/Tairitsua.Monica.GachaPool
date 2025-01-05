@@ -3,8 +3,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using CardPool.Conventions;
+using CardPool.Interfaces;
 
-namespace CardPool.Core;
+namespace CardPool.Implements;
 
 public class CardDrawStatistician : ICardDrawStatistician
 {

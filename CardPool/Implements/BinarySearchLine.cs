@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
+using CardPool.Conventions;
 
-namespace CardPool.Core;
+namespace CardPool.Implements;
 
 public class BinarySearchLine
 {
@@ -14,8 +15,8 @@ public class BinarySearchLine
     /// probability interval beginning (included for current card) and the previous card's ending
     /// (excluded for previous card).
     /// </summary>
-    public required (double ProbabilityIndex, Card Card)[] CardsBinarySearchLine  { get; init; }
-        
+    public required (double ProbabilityIndex, Card Card)[] CardsBinarySearchLine { get; init; }
+
     /// <summary>
     /// Search from all cards.
     /// </summary>
@@ -25,7 +26,7 @@ public class BinarySearchLine
     {
         return BinarySearch(probability, 0, CardsBinarySearchLine.Length - 1);
     }
- 
+
     private Card BinarySearch(double probability, int startIndex, int endIndex)
     {
         if (startIndex > endIndex) throw new Exception("startIndex is larger than endIndex");
@@ -37,9 +38,9 @@ public class BinarySearchLine
                 if (curIndexProbability <= probability) return CardsBinarySearchLine.ElementAt(startIndex).Card;
                 if (curIndexProbability > probability)
                 {
-                    return startIndex == 0 ? 
-                        LeftMostCard : 
-                        CardsBinarySearchLine[startIndex-1].Card;
+                    return startIndex == 0 ?
+                        LeftMostCard :
+                        CardsBinarySearchLine[startIndex - 1].Card;
                 }
             }
             var middle = (endIndex + startIndex) / 2;

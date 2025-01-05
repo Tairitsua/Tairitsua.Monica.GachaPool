@@ -1,6 +1,6 @@
 using System;
 
-namespace CardPool.Core;
+namespace CardPool.Conventions;
 
 /// <summary>
 /// The rarity of the card.

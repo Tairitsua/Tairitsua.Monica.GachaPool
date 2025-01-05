@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using System.Threading;
-using CardPool.Core;
+using CardPool.Conventions;
+using CardPool.Implements;
 using NUnit.Framework;
 
 namespace CardPool.Tests;

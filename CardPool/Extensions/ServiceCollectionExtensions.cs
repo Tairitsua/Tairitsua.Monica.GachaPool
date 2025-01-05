@@ -1,6 +1,9 @@
+using CardPool.Conventions;
+using CardPool.Implements;
+using CardPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CardPool.Core;
+namespace CardPool.Extensions;
 
 /// <summary>
 /// Provides extension methods for registering CardPool services with dependency injection.
@@ -17,10 +20,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICardsPool, CardsPool>();
         services.AddScoped<ICardDrawer, CardDrawer>();
         services.AddScoped<ICardDrawStatistician, CardDrawStatistician>();
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// Adds CardPool services with generic card drawer to the specified IServiceCollection.
     /// </summary>
@@ -32,7 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICardsPool, CardsPool>();
         services.AddScoped<ICardDrawer<T>, CardDrawer<T>>();
         services.AddScoped<ICardDrawStatistician, CardDrawStatistician>();
-        
+
         return services;
     }
-} 
+}
