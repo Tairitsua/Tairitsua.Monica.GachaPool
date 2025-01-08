@@ -28,4 +28,10 @@ public interface ICardDrawStatistician
     /// Gets a formatted string representation of the draw statistics.
     /// </summary>
     string GetReportTableString();
+
+    /// <summary>
+    /// Gets a structured report of the draw statistics.
+    /// </summary>
+    /// <returns>A CardDrawReport containing detailed statistics about card draws.</returns>
+    CardDrawReport GetReport();
 }

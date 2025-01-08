@@ -151,4 +151,127 @@ public class CardDrawStatisticianTests
         Assert.That(_statistician.CardRecordDict[card].Value, Is.EqualTo(threadCount * drawsPerThread));
         Assert.That(_statistician.RecordedTimes, Is.EqualTo(threadCount * drawsPerThread));
     }
+
+    [Test]
+    public void GetReport_ShouldIncludeAllCards()
+    {
+        // Arrange
+        foreach (var card in _testCards)
+        {
+            _statistician.RecordDrawnCard(card);
+        }
+        
+        // Act
+        var report = _statistician.GetReport();
+        
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.TotalDraws, Is.EqualTo(_testCards.Count));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count));
+            foreach (var card in _testCards)
+            {
+                var cardStat = report.CardStats.FirstOrDefault(s => s.Card == card);
+                Assert.That(cardStat, Is.Not.Null);
+                Assert.That(cardStat!.DrawCount, Is.EqualTo(1));
+                Assert.That(cardStat.ActualProbability, Is.EqualTo(1.0 / _testCards.Count));
+            }
+        });
+    }
+
+    [Test]
+    public void GetReport_WithMultipleDraws_ShouldCalculateCorrectProbabilities()
+    {
+        // Arrange
+        const int drawCount = 100;
+        var targetCard = _testCards[0];
+        
+        for (var i = 0; i < drawCount; i++)
+        {
+            _statistician.RecordDrawnCard(targetCard);
+        }
+        
+        // Act
+        var report = _statistician.GetReport();
+        
+        // Assert
+        var targetCardStats = report.CardStats.First(s => s.Card == targetCard);
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.TotalDraws, Is.EqualTo(drawCount));
+            Assert.That(targetCardStats.DrawCount, Is.EqualTo(drawCount));
+            Assert.That(targetCardStats.ActualProbability, Is.EqualTo(1.0));
+            Assert.That(report.CardStats.Where(s => s.Card != targetCard).All(s => s.DrawCount == 0));
+        });
+    }
+
+    [Test]
+    public void GetReport_WithNoDraws_ShouldReturnZeroProbabilities()
+    {
+        // Act
+        var report = _statistician.GetReport();
+        
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.TotalDraws, Is.EqualTo(0));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count));
+            Assert.That(report.CardStats.All(s => s.DrawCount == 0));
+            Assert.That(report.CardStats.All(s => s.ActualProbability == 0));
+        });
+    }
+
+    [Test]
+    public void GetReport_TableString_ShouldMatchOldFormat()
+    {
+        // Arrange
+        const int drawCount = 100;
+        var targetCard = _testCards[0];
+        
+        for (var i = 0; i < drawCount; i++)
+        {
+            _statistician.RecordDrawnCard(targetCard);
+        }
+        
+        // Act
+        var report = _statistician.GetReport();
+        var tableString = report.GetTableString();
+        
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(tableString, Does.Contain("sum of all probability:"));
+            Assert.That(tableString, Does.Contain($"total drawn times: {drawCount}"));
+            Assert.That(tableString, Does.Contain(targetCard.GetCardName()));
+            Assert.That(tableString, Does.Contain("100.00%")); // Since we only drew one card
+            Assert.That(tableString, Does.Contain(drawCount.ToString()));
+            
+            // Verify table format
+            Assert.That(tableString, Does.Contain("CardName"));
+            Assert.That(tableString, Does.Contain("ExpectProb"));
+            Assert.That(tableString, Does.Contain("Rarity"));
+            Assert.That(tableString, Does.Contain("DrawnCount"));
+            Assert.That(tableString, Does.Contain("ExactProb"));
+        });
+    }
+
+    [Test]
+    public void GetReport_TableString_ShouldIncludeAllCards()
+    {
+        // Arrange
+        foreach (var card in _testCards)
+        {
+            _statistician.RecordDrawnCard(card);
+        }
+        
+        // Act
+        var report = _statistician.GetReport();
+        var tableString = report.GetTableString();
+        
+        // Assert
+        foreach (var card in _testCards)
+        {
+            Assert.That(tableString, Does.Contain(card.GetCardName()));
+        }
+    }
 } 

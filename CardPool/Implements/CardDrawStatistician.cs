@@ -42,23 +42,31 @@ public class CardDrawStatistician : ICardDrawStatistician
 
     public string GetReportTableString()
     {
-        var des = new StringBuilder();
-        des.AppendLine($"sum of all probability: {CardRecordDict.Keys.Sum(c => c.RealProbability)}");
-        des.AppendLine($"total drawn times: {_recordedTimes}");
-        des.AppendLine(new string('-', 80));
-        des.AppendLine($"{"CardName",-20}{"ExpectProb",-15}{"Rarity",-10}{"DrawnCount",-15}{"ExactProb",-15}");
-        des.AppendLine(new string('-', 80));
-        foreach (var (card, getTimes) in CardRecordDict)
-        {
-            var times = getTimes.Value;
-            des.AppendLine($"{card.GetCardName().PadRight(20)}" +
-                           $"{card.RealProbability.ToString("P4").PadRight(15)}" +
-                           $"{card.Rarity.ToString().PadRight(10)}" +
-                           $"{times.ToString().PadRight(15)}" +
-                           $"{(times / (double)_recordedTimes).ToString("P4").PadRight(15)}");
-        }
-        des.AppendLine(new string('-', 80));
-        return des.ToString().TrimEnd('\n');
+        return GetReport().GetTableString();
     }
 
+    public CardDrawReport GetReport()
+    {
+        var cardStats = CardRecordDict.Select(kvp =>
+        {
+            var card = kvp.Key;
+            var drawCount = kvp.Value.Value;
+            return new CardStatistics
+            {
+                Card = card,
+                CardName = card.GetCardName(),
+                ExpectedProbability = card.RealProbability,
+                ActualProbability = _recordedTimes > 0 ? drawCount / (double)_recordedTimes : 0,
+                DrawCount = drawCount,
+                Rarity = card.Rarity
+            };
+        }).ToList();
+
+        return new CardDrawReport
+        {
+            TotalDraws = _recordedTimes,
+            CardStats = cardStats,
+            TotalProbability = CardRecordDict.Keys.Sum(c => c.RealProbability)
+        };
+    }
 }
