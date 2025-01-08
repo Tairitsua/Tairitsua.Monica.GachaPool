@@ -41,7 +41,7 @@ public interface ICardDrawer
 /// <summary>
 /// Defines the contract for a generic card drawer that handles drawing strongly-typed cards.
 /// </summary>
-public interface ICardDrawer<T> : ICardDrawer where T : Card<T>
+public interface ICardDrawer<T> : ICardDrawer where T : notnull
 {
     /// <summary>
     /// Draws a random card of type T from the pool.

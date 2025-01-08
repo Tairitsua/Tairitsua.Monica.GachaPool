@@ -37,11 +37,11 @@ public abstract class CardsPoolByMemoryProvider : ICardsPoolLoader
     /// <param name="poolName">The name of the pool to create.</param>
     /// <param name="cards">The cards to add to the pool.</param>
     /// <param name="configure">Optional additional configuration for the pool.</param>
-    protected void ConfigurePool<T>(string poolName, IEnumerable<Card<T>> cards, Action<CardsPool>? configure = null) where T : Card<T>
+    protected void ConfigurePool<T>(string poolName, IEnumerable<Card<T>> cards, Action<CardsPool>? configure = null) where T : notnull
     {
         _poolConfigurations[poolName] = pool =>
         {
-            pool.AddCards(cards.ToArray<Card?>());
+            pool.AddCards(cards.ToArray<Card>());
             configure?.Invoke(pool);
             pool.BuildPool();
         };

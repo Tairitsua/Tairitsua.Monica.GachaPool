@@ -28,7 +28,7 @@ public interface ICardPoolManager
     /// <typeparam name="T">The type of cards in the pool.</typeparam>
     /// <param name="poolName">The name of the card pool to get a drawer for.</param>
     /// <returns>The generic card drawer instance if the pool exists, null otherwise.</returns>
-    ICardDrawer<T>? GetDrawer<T>(string poolName) where T : Card<T>;
+    ICardDrawer<T>? GetDrawer<T>(string poolName) where T : notnull;
 
     /// <summary>
     /// Gets all available pool names.

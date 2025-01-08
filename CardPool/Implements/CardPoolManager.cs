@@ -39,7 +39,7 @@ public class CardPoolManager : ICardPoolManager
     }
 
     /// <inheritdoc />
-    public ICardDrawer<T>? GetDrawer<T>(string poolName) where T : Card<T>
+    public ICardDrawer<T>? GetDrawer<T>(string poolName) where T : notnull
     {
         if (_drawers.TryGetValue(poolName, out var drawer))
         {

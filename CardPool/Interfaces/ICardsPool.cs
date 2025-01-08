@@ -27,12 +27,12 @@ public interface ICardsPool
     /// <summary>
     /// Adds one or more cards to the pool.
     /// </summary>
-    void AddCards(params Card?[] cards);
+    void AddCards(params IEnumerable<Card> cards);
 
     /// <summary>
     /// Removes one or more cards from the pool.
     /// </summary>
-    void RemoveCards(params Card?[] cards);
+    void RemoveCards(params IEnumerable<Card> cards);
 
     /// <summary>
     /// Sets the probability for a specific card rarity in the pool.

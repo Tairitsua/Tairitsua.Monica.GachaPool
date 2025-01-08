@@ -95,16 +95,15 @@ public class CardsPool : ICardsPool
     /// Removes one or more cards from the pool.
     /// </summary>
     /// <param name="cards">The cards to remove.</param>
-    public void RemoveCards(params Card?[] cards)
+    public void RemoveCards(params IEnumerable<Card> cards)
     {
         _buildPoolLockSlim.EnterWriteLock();
         try
         {
             _needBuildPool = true;
-            foreach (var appendedCard in cards)
+            foreach (var card in cards)
             {
-                if (appendedCard == null) continue;
-                _cards.Remove(appendedCard);
+                _cards.Remove(card);
             }
         }
         finally
@@ -117,16 +116,15 @@ public class CardsPool : ICardsPool
     /// Adds one or more cards to the pool.
     /// </summary>
     /// <param name="cards">The cards to add.</param>
-    public void AddCards(params Card?[] cards)
+    public void AddCards(params IEnumerable<Card> cards)
     {
         _buildPoolLockSlim.EnterWriteLock();
         try
         {
             _needBuildPool = true;
-            foreach (var appendedCard in cards)
+            foreach (var card in cards)
             {
-                if (appendedCard == null) continue;
-                _cards.Add(appendedCard);
+                _cards.Add(card);
             }
         }
         finally
@@ -135,24 +133,7 @@ public class CardsPool : ICardsPool
         }
     }
 
-    /// <summary>
-    /// Adds a collection of cards to the pool.
-    /// </summary>
-    /// <param name="cards">The collection of cards to add.</param>
-    public void AddCards(IEnumerable<Card>? cards)
-    {
-        _buildPoolLockSlim.EnterWriteLock();
-        try
-        {
-            _needBuildPool = true;
-            if (cards == null) return;
-            _cards.AddRange(cards);
-        }
-        finally
-        {
-            _buildPoolLockSlim.ExitWriteLock();
-        }
-    }
+
 
     #endregion
 

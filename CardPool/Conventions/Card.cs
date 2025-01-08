@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace CardPool.Conventions;
@@ -184,6 +185,17 @@ public class Card<T> : Card where T : notnull
     }
 
     /// <summary>
+    /// Initializes a new instance of the Card{T} class.
+    /// </summary>
+    /// <param name="rarity"></param>
+    /// <param name="cardInfo"></param>
+    public Card(CardRarity rarity, T cardInfo)
+    {
+        CardInfo = cardInfo;
+        Rarity = rarity;
+    }
+
+    /// <summary>
     /// Creates multiple cards of the same rarity with different values.
     /// </summary>
     /// <param name="rarity">The rarity to assign to all created cards.</param>
@@ -191,17 +203,7 @@ public class Card<T> : Card where T : notnull
     /// <returns>A list of created cards.</returns>
     public static List<Card<T>> CreateMultiCards(CardRarity rarity, params T[] cards)
     {
-        var createdCards = new List<Card<T>>();
-        foreach (var card in cards)
-        {
-            var newCard = new Card<T>(card)
-            {
-                Rarity = rarity
-            };
-            createdCards.Add(newCard);
-        }
-
-        return createdCards;
+        return cards.Select(card => new Card<T>(rarity, card)).ToList();
     }
 
     public override bool Equals(object? obj)
@@ -227,6 +229,11 @@ public class Card<T> : Card where T : notnull
     public override string GetCardName()
     {
         return CardInfo.ToString() ?? "UNF";
+    }
+
+    public static Card CreateCard(CardRarity rarity, T card)
+    {
+        return new Card<T>(card) { Rarity = rarity };
     }
 }
 

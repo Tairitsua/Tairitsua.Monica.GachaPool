@@ -101,7 +101,7 @@ public class CardDrawer : ICardDrawer
 /// Generic version of CardDrawer that provides strongly-typed card drawing functionality.
 /// </summary>
 /// <typeparam name="T">The type of card to draw.</typeparam>
-public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : Card<T>
+public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : notnull
 {
     /// <summary>
     /// Initializes a new instance of the generic CardDrawer class.
