@@ -65,45 +65,6 @@ public class CardDrawStatisticianTests
     }
 
     [Test]
-    public void GetReportTableString_ShouldIncludeAllCards()
-    {
-        // Arrange
-        foreach (var card in _testCards)
-        {
-            _statistician.RecordDrawnCard(card);
-        }
-        
-        // Act
-        var report = _statistician.GetReportTableString();
-        
-        // Assert
-        foreach (var card in _testCards)
-        {
-            Assert.That(report, Does.Contain(card.GetCardName()));
-        }
-    }
-
-    [Test]
-    public void GetReportTableString_ShouldShowCorrectProbabilities()
-    {
-        // Arrange
-        const int drawCount = 100;
-        var targetCard = _testCards[0];
-        
-        for (var i = 0; i < drawCount; i++)
-        {
-            _statistician.RecordDrawnCard(targetCard);
-        }
-        
-        // Act
-        var report = _statistician.GetReportTableString();
-        
-        // Assert
-        Assert.That(report, Does.Contain("100.00%")); // Since we only drew one card
-        Assert.That(report, Does.Contain(drawCount.ToString()));
-    }
-
-    [Test]
     public void RecordDrawnCard_WithRemainedCard_ShouldTrackCorrectly()
     {
         // Arrange
@@ -222,7 +183,7 @@ public class CardDrawStatisticianTests
     }
 
     [Test]
-    public void GetReport_TableString_ShouldMatchOldFormat()
+    public void GetReport_TableString_ShouldFormatCorrectly()
     {
         // Arrange
         const int drawCount = 100;
@@ -253,25 +214,5 @@ public class CardDrawStatisticianTests
             Assert.That(tableString, Does.Contain("DrawnCount"));
             Assert.That(tableString, Does.Contain("ExactProb"));
         });
-    }
-
-    [Test]
-    public void GetReport_TableString_ShouldIncludeAllCards()
-    {
-        // Arrange
-        foreach (var card in _testCards)
-        {
-            _statistician.RecordDrawnCard(card);
-        }
-        
-        // Act
-        var report = _statistician.GetReport();
-        var tableString = report.GetTableString();
-        
-        // Assert
-        foreach (var card in _testCards)
-        {
-            Assert.That(tableString, Does.Contain(card.GetCardName()));
-        }
     }
 } 

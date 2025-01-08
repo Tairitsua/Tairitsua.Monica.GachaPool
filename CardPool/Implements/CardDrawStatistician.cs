@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using CardPool.Conventions;
 using CardPool.Interfaces;
@@ -38,11 +37,6 @@ public class CardDrawStatistician : ICardDrawStatistician
     {
         Interlocked.Increment(ref CardRecordDict[card].Value);
         Interlocked.Increment(ref _recordedTimes);
-    }
-
-    public string GetReportTableString()
-    {
-        return GetReport().GetTableString();
     }
 
     public CardDrawReport GetReport()
