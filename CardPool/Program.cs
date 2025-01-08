@@ -111,7 +111,7 @@ public static class Program
             Thread.Sleep(sleepTime);
             var perMsGetCard = (drawer.Statistician.RecordedTimes - previousDrawTimes) / sleepTime;
             previousDrawTimes = drawer.Statistician.RecordedTimes;
-            writer.Update($"{threadCount} threads 1ms could draw {perMsGetCard} cards\n{drawer.Statistician.GetReportTableString()}");
+            writer.Update($"{threadCount} threads 1ms could draw {perMsGetCard} cards\n{drawer.Statistician.GetReport().GetTableString()}");
         }
     }
 
@@ -137,7 +137,7 @@ public static class Program
             }
 
             stopwatch.Stop();
-            writer.Update($"draw {times} cards take {stopwatch.ElapsedMilliseconds}ms\n{drawer.Statistician.GetReportTableString()}");
+            writer.Update($"draw {times} cards take {stopwatch.ElapsedMilliseconds}ms\n{drawer.Statistician.GetReport().GetTableString()}");
         }
     }
 }

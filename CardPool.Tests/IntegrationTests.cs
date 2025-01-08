@@ -45,7 +45,7 @@ public class IntegrationTests
         Assert.That(stats.RecordedTimes, Is.EqualTo(drawCount));
         
         // Verify probabilities are roughly as expected
-        var report = stats.GetReportTableString();
+        var report = stats.GetReport().GetTableString();
         Assert.That(report, Is.Not.Empty);
     }
 

@@ -215,4 +215,40 @@ public class CardDrawStatisticianTests
             Assert.That(tableString, Does.Contain("ExactProb"));
         });
     }
+
+    [Test]
+    public void GetReport_WhenPoolChanges_ShouldStayInSync()
+    {
+        // Arrange
+        var initialCard = _testCards[0];
+        _statistician.RecordDrawnCard(initialCard);
+        
+        // Act - Add new card
+        var newCard = Card<int>.CreateCard(CardRarity.OneStar, 999);
+        _pool.AddCards(newCard);
+        var report = _statistician.GetReport();
+        
+        // Assert
+        Assert.Multiple(() =>
+        {
+            // Should include both initial and new card
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 1));
+            Assert.That(report.CardStats.Any(s => s.Card == newCard));
+            Assert.That(report.CardStats.First(s => s.Card == initialCard).DrawCount, Is.EqualTo(1));
+            Assert.That(report.CardStats.First(s => s.Card == newCard).DrawCount, Is.EqualTo(0));
+        });
+        
+        // Act - Remove a card and verify it's still tracked
+        _pool.RemoveCards(initialCard);
+        report = _statistician.GetReport();
+        
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 1));
+            var removedCardStats = report.CardStats.First(s => s.Card == initialCard);
+            Assert.That(removedCardStats.DrawCount, Is.EqualTo(1));
+            Assert.That(initialCard.IsRemoved, Is.True);
+        });
+    }
 } 
