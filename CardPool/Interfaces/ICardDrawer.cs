@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardPool.Conventions;
 
 namespace CardPool.Interfaces;
@@ -30,12 +31,12 @@ public interface ICardDrawer
     /// <summary>
     /// Draws a random card from the pool, limited to the specified included cards.
     /// </summary>
-    Card DrawCardInclude(params Card[] includedCards);
+    Card DrawCardInclude(params IEnumerable<Card> includedCards);
 
     /// <summary>
     /// Draws a random card from the pool, excluding specified cards.
     /// </summary>
-    Card DrawCardExcept(params Card[] exclusiveCards);
+    Card DrawCardExcept(params IEnumerable<Card> exclusiveCards);
 }
 
 /// <summary>
@@ -56,5 +57,13 @@ public interface ICardDrawer<T> : ICardDrawer where T : notnull
     /// <summary>
     /// Draws a random card of type T from the pool, including only the specified cards.
     /// </summary>
-    Card<T>? DrawCardInclude(params Card<T>[] includedCards);
+    Card<T>? DrawCardInclude(params IEnumerable<Card<T>> includedCards);
+
+
+    /// <summary>
+    /// Draws a random card of type T from the pool, excluding the specified cards.
+    /// </summary>
+    /// <param name="exclusiveCards"></param>
+    /// <returns></returns>
+    Card<T>? DrawCardExcept(params IEnumerable<Card<T>> exclusiveCards);
 }

@@ -35,7 +35,7 @@ public class CardsPoolTests
     }
 
     [Test]
-    public void RemoveCards_WhenCardsRemoved_ShouldNotBeInPool()
+    public void RemoveCards_WhenCardsRemoved_ShouldBeMarkedAsRemoved()
     {
         // Arrange
         var card1 = Card<int>.CreateCard(CardRarity.OneStar, 1);
@@ -46,9 +46,9 @@ public class CardsPoolTests
         _pool.RemoveCards(card1);
         
         // Assert
-        Assert.That(_pool.Cards, Has.Count.EqualTo(1));
-        Assert.That(_pool.Cards, Does.Not.Contain(card1));
-        Assert.That(_pool.Cards, Contains.Item(card2));
+        Assert.That(_pool.Cards, Has.Count.EqualTo(2), "Card should still be in pool but marked as removed");
+        Assert.That(card1.IsRemoved, Is.True, "Card should be marked as removed");
+        Assert.That(card2.IsRemoved, Is.False, "Other cards should not be affected");
     }
 
     [Test]

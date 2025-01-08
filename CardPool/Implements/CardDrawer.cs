@@ -60,7 +60,7 @@ public class CardDrawer : ICardDrawer
     /// </summary>
     /// <param name="includedCards">The cards to include in the draw.</param>
     /// <returns>The drawn card, or null if no cards from the included set are available.</returns>
-    public Card DrawCardInclude(params Card[] includedCards)
+    public Card DrawCardInclude(params IEnumerable<Card> includedCards)
     {
         var includedSet = new HashSet<Card>(includedCards);
         var availableCards = Pool.Cards.Where(card => includedSet.Contains(card) && !card.IsRemoved).ToList();
@@ -68,14 +68,12 @@ public class CardDrawer : ICardDrawer
     }
 
 
-
-
     /// <summary>
     /// Draws a random card from the pool, excluding specified cards.
     /// </summary>
     /// <param name="exclusiveCards">Cards to exclude from the draw.</param>
     /// <returns>The drawn card.</returns>
-    public Card DrawCardExcept(params Card[] exclusiveCards)
+    public Card DrawCardExcept(params IEnumerable<Card> exclusiveCards)
     {
         var excludedSet = new HashSet<Card>(exclusiveCards);
         var availableCards = Pool.Cards.Where(card => !excludedSet.Contains(card) && !card.IsRemoved).ToList();
@@ -139,11 +137,10 @@ public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : notnull
     /// <exception cref="InvalidOperationException">
     /// Thrown when unable to draw a card from the inclusion list after maximum attempts.
     /// </exception>
-    public Card<T>? DrawCardInclude(params Card<T>[] includedCards)
+    public Card<T>? DrawCardInclude(params IEnumerable<Card<T>> includedCards)
     {
-        return DrawCardInclude(includedCards.Select(Card (p) => p).ToArray()) as Card<T>;
+        return DrawCardInclude(includedCards.Select(Card (p) => p)) as Card<T>;
     }
-
 
 
     /// <summary>
@@ -152,9 +149,9 @@ public class CardDrawer<T> : CardDrawer, ICardDrawer<T> where T : notnull
     /// <param name="exclusiveCards">Cards to exclude from the draw.</param>
     /// <returns>The drawn card.</returns>
     /// <exception cref="InvalidOperationException">Thrown when unable to draw a card that isn't in the exclusion list after maximum attempts.</exception>
-    public Card<T>? DrawCardExcept(params Card<T>[] exclusiveCards)
+    public Card<T>? DrawCardExcept(params IEnumerable<Card<T>> exclusiveCards)
     {
-        return DrawCardExcept(exclusiveCards.Select(Card (p) => p).ToArray()) as Card<T>;
+        return DrawCardExcept(exclusiveCards.Select(Card (p) => p)) as Card<T>;
     }
 
 

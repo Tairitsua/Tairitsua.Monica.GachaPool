@@ -128,7 +128,9 @@ public class CardDrawerTests
             .ToList();
         
         // Assert
-        Assert.That(drawnCards, Does.Not.Contain(cardToRemove));
+        Assert.That(drawnCards, Does.Not.Contain(cardToRemove), "Should not draw removed card");
+        Assert.That(cardToRemove.IsRemoved, Is.True, "Card should be marked as removed");
+        Assert.That(_pool.Cards, Does.Contain(cardToRemove), "Removed card should still be in pool");
     }
 
     [Test]

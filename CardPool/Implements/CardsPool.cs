@@ -23,7 +23,7 @@ public class CardsPool : ICardsPool
     /// <summary>
     /// The all cards in pool. 
     /// </summary>
-    public IReadOnlyList<Card> Cards => _cards;
+    public IReadOnlyList<Card> Cards => _cards.ToList();
 
     private bool _needBuildPool;
 
@@ -50,7 +50,6 @@ public class CardsPool : ICardsPool
             {
                 _buildPoolLockSlim.ExitWriteLock();
             }
-
         }
     }
 
@@ -62,7 +61,7 @@ public class CardsPool : ICardsPool
     /// <summary>
     /// The cards in pool. the cards are ordered by rarity ascending.
     /// </summary>
-    private List<Card> _cards = [];
+    private readonly HashSet<Card> _cards = [];
 
     private BinarySearchLine SearchLine { get; set; } = null!;
 
@@ -71,7 +70,6 @@ public class CardsPool : ICardsPool
     /// </summary>
     public CardsPool()
     {
-
     }
 
     /// <summary>
@@ -85,16 +83,19 @@ public class CardsPool : ICardsPool
         foreach (var cardList in cards)
         {
             if (cardList == null) continue;
-            _cards.AddRange(cardList.ToList());
+            foreach (var card in cardList)
+            {
+                _cards.Add(card);
+            }
         }
     }
 
     #region AlterPoolCards
 
     /// <summary>
-    /// Removes one or more cards from the pool.
+    /// Marks one or more cards as removed from the pool.
     /// </summary>
-    /// <param name="cards">The cards to remove.</param>
+    /// <param name="cards">The cards to mark as removed.</param>
     public void RemoveCards(params IEnumerable<Card> cards)
     {
         _buildPoolLockSlim.EnterWriteLock();
@@ -103,7 +104,10 @@ public class CardsPool : ICardsPool
             _needBuildPool = true;
             foreach (var card in cards)
             {
-                _cards.Remove(card);
+                if (_cards.Contains(card))
+                {
+                    card.IsRemoved = true;
+                }
             }
         }
         finally
@@ -132,8 +136,6 @@ public class CardsPool : ICardsPool
             _buildPoolLockSlim.ExitWriteLock();
         }
     }
-
-
 
     #endregion
 
@@ -200,8 +202,9 @@ public class CardsPool : ICardsPool
         {
             _needBuildPool = false;
             if (_cards == null || _cards.Count == 0) throw new InvalidOperationException("Cards pool is empty");
-            _cards = _cards.OrderBy(card => card.Rarity).ToList();
-            foreach (var card in _cards)
+            
+            var orderedCards = _cards.OrderBy(card => card.Rarity).ToList();
+            foreach (var card in orderedCards)
             {
                 card.RealProbability = 0;
                 if (card is { IsRemoved: false, PresetProbability: { } setProbability })
@@ -210,14 +213,14 @@ public class CardsPool : ICardsPool
                 }
             }
 
-            var validCards = _cards.Where(c => !c.IsRemoved).ToList();
+            var validCards = orderedCards.Where(c => !c.IsRemoved).ToList();
             _containLimitedCard = validCards.Any(c => c is { IsLimitedCard: true, IsRemoved: false });
+            
             // fulfill all cards with global probability.
             foreach (var (rarity, wholeProbability) in RarityProbabilitySetting)
             {
                 if (wholeProbability == 0) continue;
                 var cardsWithSameRarity = validCards.Where(c => c.Rarity == rarity && c.PresetProbability == null).ToList();
-
 
                 if (cardsWithSameRarity.Count == 0) continue;
                 var perProbability = (wholeProbability - (cardsWithSameRarity
@@ -261,7 +264,8 @@ public class CardsPool : ICardsPool
                     }
                 }
             }
-
+            
+            // Create binary search line with valid cards
             SearchLine = CreateBinarySearchLine(validCards);
         }
         finally
