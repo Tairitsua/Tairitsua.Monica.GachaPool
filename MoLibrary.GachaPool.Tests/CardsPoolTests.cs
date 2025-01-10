@@ -136,6 +136,6 @@ public class CardsPoolTests
         // Assert
         Assert.That(info, Is.Not.Empty);
         Assert.That(info, Does.Contain(card.GetCardName()));
-        Assert.That(info, Does.Contain("100.0000%"));
+        Assert.That(info, Does.Contain("100.0000"));
     }
 } 

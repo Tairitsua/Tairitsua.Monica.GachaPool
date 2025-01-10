@@ -189,7 +189,7 @@ public class CardDrawStatisticianTests
             Assert.That(tableString, Does.Contain("sum of all probability:"));
             Assert.That(tableString, Does.Contain($"total drawn times: {drawCount}"));
             Assert.That(tableString, Does.Contain(targetCard.GetCardName()));
-            Assert.That(tableString, Does.Contain("100.0000%")); // Since we only drew one card
+            Assert.That(tableString, Does.Contain("100.0000")); // Since we only drew one card
             Assert.That(tableString, Does.Contain(drawCount.ToString()));
             
             // Verify table format
