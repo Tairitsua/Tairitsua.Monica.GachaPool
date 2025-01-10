@@ -13,7 +13,12 @@ namespace MoLibrary.GachaPool.Implements;
 public class CardsPool : ICardsPool
 {
     private static readonly Random RandomSeed = new();
+#if NOTLATEST
+    private static readonly object RandomLock = new();
+#else
     private static readonly Lock RandomLock = new();
+#endif
+    
     /// <summary>
     /// The whole probability setting of cards which have the same specific rarity.
     /// </summary>
