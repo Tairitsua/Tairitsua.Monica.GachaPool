@@ -3,6 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/v/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
 [![Tests](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml/badge.svg)](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/Euynac/MoLibrary.GachaPool/branch/main/graph/badge.svg)](https://codecov.io/gh/Euynac/MoLibrary.GachaPool)
 
 MoLibrary.GachaPool is a flexible and efficient .NET library for managing gacha pools with probability-based drawing mechanisms. It provides a robust foundation for implementing gacha systems in games or any application requiring probability-based item selection.
 
