@@ -24,6 +24,10 @@ public class CardDrawStatistician : ICardDrawStatistician
     public CardDrawStatistician(ICardsPool pool)
     {
         _pool = pool;
+        foreach (var card in _pool.Cards)
+        {
+            EnsureCardInDictionary(card);
+        }
     }
 
     private void EnsureCardInDictionary(Card card)
@@ -45,11 +49,7 @@ public class CardDrawStatistician : ICardDrawStatistician
         {
             EnsureCardInDictionary(card);
         }
-        if (_pool.RemainedCard != null)
-        {
-            EnsureCardInDictionary(_pool.RemainedCard);
-        }
-
+        
         var cardStats = _pool.Cards.Select(card =>
         {
             var drawCount = _cardRecordDict.GetOrAdd(card, _ => new StrongBox<int>(0)).Value;
@@ -63,22 +63,6 @@ public class CardDrawStatistician : ICardDrawStatistician
                 Rarity = card.Rarity
             };
         }).ToList();
-
-        // Add remained card stats if it exists and isn't already in the pool
-        if (_pool.RemainedCard != null && !_pool.Cards.Contains(_pool.RemainedCard))
-        {
-            var remainedCard = _pool.RemainedCard;
-            var drawCount = _cardRecordDict.GetOrAdd(remainedCard, _ => new StrongBox<int>(0)).Value;
-            cardStats.Add(new CardStatistics
-            {
-                Card = remainedCard,
-                CardName = remainedCard.GetCardName(),
-                ExpectedProbability = remainedCard.RealProbability,
-                ActualProbability = _recordedTimes > 0 ? drawCount / (double)_recordedTimes : 0,
-                DrawCount = drawCount,
-                Rarity = remainedCard.Rarity
-            });
-        }
 
         return new CardDrawReport
         {

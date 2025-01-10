@@ -40,7 +40,11 @@ public abstract class Card
     /// </summary>
     public double? PresetProbability { get; set; }
 
-
+    /// <summary>
+    /// Gets a value indicating whether this card is a "NothingCard".
+    /// A "NothingCard" represents the absence of a valid card in a card pool.
+    /// </summary>
+    public bool IsNotingCard => this is NothingCard;
     /// <summary>
     /// Indicate that the card has been removed and will not appear at card pool.
     /// (or to say the probability has becomes zero)

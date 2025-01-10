@@ -12,7 +12,6 @@ namespace CardPool.Implements;
 /// </summary>
 public class CardsPool : ICardsPool
 {
-    private Card? _remainedCard;
     private static readonly Random RandomSeed = new();
     private static readonly Lock RandomLock = new();
     /// <summary>
@@ -28,30 +27,6 @@ public class CardsPool : ICardsPool
     private bool _needBuildPool;
 
     private readonly ReaderWriterLockSlim _buildPoolLockSlim = new(LockRecursionPolicy.SupportsRecursion);
-
-    /// <summary>
-    /// The remaining probability card, which usually means the worst lucky and gets nothing, but you can set it as a
-    /// specific card. If not set(means remained card is null), the default remained card will be the first least probability card (leftmost card).
-    /// You can set the card as null, which means drawer may draw out null (return NothingCard).
-    /// This card's global probability will be auto assigned when initialize the cards pool.
-    /// </summary>
-    public Card? RemainedCard
-    {
-        get => _remainedCard;
-        set
-        {
-            _buildPoolLockSlim.EnterWriteLock();
-            try
-            {
-                _needBuildPool = true;
-                _remainedCard = value ?? new NothingCard();
-            }
-            finally
-            {
-                _buildPoolLockSlim.ExitWriteLock();
-            }
-        }
-    }
 
     /// <summary>
     /// Limited card will make draw method be serial.
@@ -201,7 +176,15 @@ public class CardsPool : ICardsPool
         try
         {
             _needBuildPool = false;
-            if (_cards == null || _cards.Count == 0) throw new InvalidOperationException("Cards pool is empty");
+            var remainedCard = new NothingCard();
+            if (_cards.TryGetValue(remainedCard, out var existedCard) && existedCard is NothingCard existedNotingCard)
+            {
+                remainedCard = existedNotingCard;
+            }
+            else
+            {
+                _cards.Add(remainedCard);
+            }
             
             var orderedCards = _cards.OrderBy(card => card.Rarity).ToList();
             foreach (var card in orderedCards)
@@ -213,7 +196,7 @@ public class CardsPool : ICardsPool
                 }
             }
 
-            var validCards = orderedCards.Where(c => !c.IsRemoved).ToList();
+            var validCards = orderedCards.Where(p => !p.IsNotingCard).Where(c => !c.IsRemoved).ToList();
             _containLimitedCard = validCards.Any(c => c is { IsLimitedCard: true, IsRemoved: false });
             
             // fulfill all cards with global probability.
@@ -244,26 +227,24 @@ public class CardsPool : ICardsPool
             {
                 throw new InvalidOperationException("remainingProbability can not be below zero, which means the cards pool total probability is out of 100%");
             }
-
-            if (validCards.Count(c => c.RealProbability == 0) is var count and > 0)
+            else if (remainingProbability > 0)
             {
-                var averageProbability = remainingProbability / count;
-                foreach (var card in validCards.Where(c => c.RealProbability == 0))
+                if (validCards.Count(c => c.RealProbability == 0) is var count and > 0)
                 {
-                    card.RealProbability = averageProbability;
-                }
-            }
-            else
-            {
-                if (_remainedCard is { } remainedCard)
-                {
-                    remainedCard.RealProbability += remainingProbability;
-                    if (!validCards.Contains(remainedCard))
+                    var averageProbability = remainingProbability / count;
+                    foreach (var card in validCards.Where(c => c.RealProbability == 0))
                     {
-                        validCards.Add(remainedCard);
+                        card.RealProbability = averageProbability;
                     }
                 }
+                else
+                {
+                    remainedCard.RealProbability = remainingProbability;
+                    validCards.Add(remainedCard);
+                }
             }
+
+          
             
             // Create binary search line with valid cards
             SearchLine = CreateBinarySearchLine(validCards);
@@ -298,8 +279,7 @@ public class CardsPool : ICardsPool
         var header = $"{"CardName",-20}{"ExpectProb",-15}{"Rarity",-10}\n";
         var separator = new string('-', 45) + "\n";
         var rows = Cards.Select(c => $"{c.GetCardName(),-20}{c.RealProbability,-15:P4}{c.Rarity,-10}");
-        var remainedCardInfo = _remainedCard != null ? $"[RemainedCard] {_remainedCard}\n" : string.Empty;
-        return remainedCardInfo + header + separator + string.Join("\n", rows) + "\n" +
+        return header + separator + string.Join("\n", rows) + "\n" +
                separator + $"sum of all probability: {Cards.Sum(c => c.RealProbability)}";
     }
 

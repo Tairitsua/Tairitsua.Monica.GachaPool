@@ -64,22 +64,7 @@ public class CardDrawStatisticianTests
         Assert.That(_statistician.RecordedTimes, Is.EqualTo(drawCount));
     }
 
-    [Test]
-    public void RecordDrawnCard_WithRemainedCard_ShouldTrackCorrectly()
-    {
-        // Arrange
-        var remainedCard = new Card<int>(CardRarity.OneStar, 999);
-        _pool.RemainedCard = remainedCard;
-        var statistician = new CardDrawStatistician(_pool); // Create new statistician after setting remained card
-        
-        // Act
-        statistician.RecordDrawnCard(remainedCard);
-        
-        // Assert
-        Assert.That(statistician.CardRecordDict.ContainsKey(remainedCard));
-        Assert.That(statistician.CardRecordDict[remainedCard].Value, Is.EqualTo(1));
-        Assert.That(statistician.RecordedTimes, Is.EqualTo(1));
-    }
+  
 
     [Test]
     public void RecordDrawnCard_WithMultipleThreads_ShouldBeThreadSafe()
@@ -129,7 +114,7 @@ public class CardDrawStatisticianTests
         Assert.Multiple(() =>
         {
             Assert.That(report.TotalDraws, Is.EqualTo(_testCards.Count));
-            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 1));
             foreach (var card in _testCards)
             {
                 var cardStat = report.CardStats.FirstOrDefault(s => s.Card == card);
@@ -176,7 +161,7 @@ public class CardDrawStatisticianTests
         Assert.Multiple(() =>
         {
             Assert.That(report.TotalDraws, Is.EqualTo(0));
-            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count+1));
             Assert.That(report.CardStats.All(s => s.DrawCount == 0));
             Assert.That(report.CardStats.All(s => s.ActualProbability == 0));
         });
@@ -204,7 +189,7 @@ public class CardDrawStatisticianTests
             Assert.That(tableString, Does.Contain("sum of all probability:"));
             Assert.That(tableString, Does.Contain($"total drawn times: {drawCount}"));
             Assert.That(tableString, Does.Contain(targetCard.GetCardName()));
-            Assert.That(tableString, Does.Contain("100.00%")); // Since we only drew one card
+            Assert.That(tableString, Does.Contain("100.0000%")); // Since we only drew one card
             Assert.That(tableString, Does.Contain(drawCount.ToString()));
             
             // Verify table format
@@ -232,7 +217,7 @@ public class CardDrawStatisticianTests
         Assert.Multiple(() =>
         {
             // Should include both initial and new card
-            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 1));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 2));
             Assert.That(report.CardStats.Any(s => s.Card == newCard));
             Assert.That(report.CardStats.First(s => s.Card == initialCard).DrawCount, Is.EqualTo(1));
             Assert.That(report.CardStats.First(s => s.Card == newCard).DrawCount, Is.EqualTo(0));
@@ -245,7 +230,7 @@ public class CardDrawStatisticianTests
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 1));
+            Assert.That(report.CardStats, Has.Count.EqualTo(_testCards.Count + 2));
             var removedCardStats = report.CardStats.First(s => s.Card == initialCard);
             Assert.That(removedCardStats.DrawCount, Is.EqualTo(1));
             Assert.That(initialCard.IsRemoved, Is.True);

@@ -20,11 +20,6 @@ public interface ICardsPool
     IReadOnlyList<Card> Cards { get; }
 
     /// <summary>
-    /// Gets or sets the remaining probability card.
-    /// </summary>
-    Card? RemainedCard { get; set; }
-
-    /// <summary>
     /// Adds one or more cards to the pool.
     /// </summary>
     void AddCards(params IEnumerable<Card> cards);

@@ -87,6 +87,11 @@ public class CardDrawer : ICardDrawer
     /// <returns>The drawn card.</returns>
     protected Card InternalDrawCard(List<Card>? customCards = null)
     {
+        if (customCards is {Count: 0})
+        {
+            customCards.Add(new NothingCard());
+        }
+        
         var card = customCards != null
             ? Pool.InternalDrawCard(CardsPool.CreateBinarySearchLine(customCards))
             : Pool.InternalDrawCard();

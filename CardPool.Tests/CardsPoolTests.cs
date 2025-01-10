@@ -88,19 +88,6 @@ public class CardsPoolTests
     }
 
     [Test]
-    public void RemainedCard_WhenSet_ShouldBeRetrievable()
-    {
-        // Arrange
-        var remainedCard = Card<int>.CreateCard(CardRarity.OneStar, 999);
-        
-        // Act
-        _pool.RemainedCard = remainedCard;
-        
-        // Assert
-        Assert.That(_pool.RemainedCard, Is.SameAs(remainedCard));
-    }
-
-    [Test]
     public void InternalDrawCard_ShouldRespectProbabilities()
     {
         // Arrange
@@ -149,6 +136,6 @@ public class CardsPoolTests
         // Assert
         Assert.That(info, Is.Not.Empty);
         Assert.That(info, Does.Contain(card.GetCardName()));
-        Assert.That(info, Does.Contain("100.00%"));
+        Assert.That(info, Does.Contain("100.0000%"));
     }
 } 
