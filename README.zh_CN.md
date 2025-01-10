@@ -2,6 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
+[![Tests](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml/badge.svg)](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml)
 
 MoLibrary.GachaPool 是一个灵活高效的 .NET 抽卡（扭蛋）系统管理库，提供基于概率的抽取机制。它为游戏或任何需要概率选择物品的应用程序提供了强大的基础设施。
 
