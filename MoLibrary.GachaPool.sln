@@ -1,7 +1,13 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoLibrary.GachaPool", "MoLibrary.GachaPool\MoLibrary.GachaPool.csproj", "{23234511-2FE9-4010-9165-31E3AD5F3808}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoLibrary.GachaPool.Tests", "MoLibrary.GachaPool.Tests\MoLibrary.GachaPool.Tests.csproj", "{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoLibrary.GachaPool.Console", "MoLibrary.GachaPool.Console\MoLibrary.GachaPool.Console.csproj", "{AA4474D7-42C8-4FD6-B985-A62E77B679C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,5 +23,12 @@ Global
 		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA4474D7-42C8-4FD6-B985-A62E77B679C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA4474D7-42C8-4FD6-B985-A62E77B679C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA4474D7-42C8-4FD6-B985-A62E77B679C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA4474D7-42C8-4FD6-B985-A62E77B679C7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using MoLibrary.GachaPool.Conventions;
 using MoLibrary.GachaPool.Implements;
 
-namespace MoLibrary.GachaPool;
-
+namespace MoLibrary.GachaPool.Console;
 /// <summary>
 /// A utility class for updating console output in place, maintaining cursor position.
 /// </summary>
@@ -29,13 +25,13 @@ public class ConsoleWriteUpdater
     {
         if (_previousCursorPosition == null)
         {
-            _previousCursorPosition = Console.GetCursorPosition();//The cursor position depends on your console window size.
+            _previousCursorPosition = System.Console.GetCursorPosition();//The cursor position depends on your console window size.
         }
         else
         {
-            Console.SetCursorPosition(_previousCursorPosition.Value.Item1, _previousCursorPosition.Value.Item2);
+            System.Console.SetCursorPosition(_previousCursorPosition.Value.Item1, _previousCursorPosition.Value.Item2);
         }
-        Console.Write(data);
+        System.Console.Write(data);
     }
         
     // can't support \n
@@ -88,7 +84,7 @@ public static class Program
     public static void StartParallelDraw()
     {
         BasicSetup();
-        Console.WriteLine(_pool.GetPoolProbabilityInfo());
+        System.Console.WriteLine(_pool.GetPoolProbabilityInfo());
         var drawer = new CardDrawer(_pool);
         var writer = new ConsoleWriteUpdater();
         var sleepTime = 1000;
@@ -121,7 +117,7 @@ public static class Program
     public static void StartSerialDraw()
     {
         BasicSetup();
-        Console.WriteLine(_pool.GetPoolProbabilityInfo());
+        System.Console.WriteLine(_pool.GetPoolProbabilityInfo());
         var drawer = new CardDrawer(_pool);
         var writer = new ConsoleWriteUpdater();
         var times = 100000;
