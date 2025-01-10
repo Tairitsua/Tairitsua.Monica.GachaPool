@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
-using CardPool.Conventions;
-using CardPool.Implements;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Implements;
+using MoLibrary.GachaPool.Interfaces;
 using NUnit.Framework;
 
-namespace CardPool.Tests;
+namespace MoLibrary.GachaPool.Tests;
 
 [TestFixture]
 public class CardPoolManagerTests

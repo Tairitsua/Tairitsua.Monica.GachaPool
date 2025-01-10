@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CardPool.Conventions;
+using MoLibrary.GachaPool.Conventions;
 
-namespace CardPool.Interfaces;
+namespace MoLibrary.GachaPool.Interfaces;
 
 /// <summary>
 /// Defines the contract for a card drawer that handles drawing cards from a pool.

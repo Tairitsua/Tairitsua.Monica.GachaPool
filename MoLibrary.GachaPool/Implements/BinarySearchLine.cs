@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using CardPool.Conventions;
+using MoLibrary.GachaPool.Conventions;
 
-namespace CardPool.Implements;
+namespace MoLibrary.GachaPool.Implements;
 
 public class BinarySearchLine
 {

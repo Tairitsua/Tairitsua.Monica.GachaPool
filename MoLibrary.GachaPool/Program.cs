@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CardPool.Conventions;
-using CardPool.Implements;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Implements;
 
-namespace CardPool;
+namespace MoLibrary.GachaPool;
 
 /// <summary>
 /// A utility class for updating console output in place, maintaining cursor position.

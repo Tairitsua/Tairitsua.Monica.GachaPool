@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardPool.Conventions;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Interfaces;
 
-namespace CardPool.Implements;
+namespace MoLibrary.GachaPool.Implements;
 
 /// <summary>
 /// Provides functionality for drawing cards from a card pool.

@@ -1,6 +1,6 @@
 using System;
 
-namespace CardPool.Conventions
+namespace MoLibrary.GachaPool.Conventions
 {
     public class ProbabilityAVLTree
     {

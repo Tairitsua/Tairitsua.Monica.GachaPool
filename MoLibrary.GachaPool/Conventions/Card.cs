@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace CardPool.Conventions;
+namespace MoLibrary.GachaPool.Conventions;
 
 public abstract class Card
 {

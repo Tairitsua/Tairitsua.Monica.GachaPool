@@ -1,6 +1,6 @@
 using System;
 
-namespace CardPool.Conventions;
+namespace MoLibrary.GachaPool.Conventions;
 
 /// <summary>
 /// The rarity of the card.

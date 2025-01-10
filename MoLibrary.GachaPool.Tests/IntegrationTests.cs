@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using CardPool.Conventions;
-using CardPool.Extensions;
-using CardPool.Implements;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Extensions;
+using MoLibrary.GachaPool.Implements;
+using MoLibrary.GachaPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace CardPool.Tests;
+namespace MoLibrary.GachaPool.Tests;
 
 [TestFixture]
 public class IntegrationTests
@@ -93,7 +93,7 @@ public class IntegrationTests
         var drawer = _manager.GetDrawer("LimitedPool");
         
         // Act & Assert
-        var limitedCard = drawer.DrawCard();
+        var limitedCard = drawer.DrawCard(CardRarity.TwoStar);
         Assert.That(limitedCard, Is.Not.Null);
         Assert.That(limitedCard.IsLimitedCard, Is.True);
         
@@ -141,7 +141,7 @@ public class TestCardPoolLoader : CardsPoolByMemoryProvider
         // Configure a pool with limited cards
         ConfigurePool("LimitedPool", pool =>
         {
-            var limitedCard = new Card<int>(CardRarity.OneStar, 999) { TotalCount = 3 };
+            var limitedCard = new Card<int>(CardRarity.TwoStar, 999) { TotalCount = 3 };
             var normalCard = Card<int>.CreateCard(CardRarity.OneStar, 1000);
             
             pool.AddCards(limitedCard, normalCard);

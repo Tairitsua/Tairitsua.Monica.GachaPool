@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using CardPool.Conventions;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Interfaces;
 
-namespace CardPool.Implements;
+namespace MoLibrary.GachaPool.Implements;
 
 /// <summary>
 /// Manages multiple card pools and provides access to them by name.

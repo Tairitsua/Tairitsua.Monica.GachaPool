@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using CardPool.Conventions;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Interfaces;
 
-namespace CardPool.Implements;
+namespace MoLibrary.GachaPool.Implements;
 
 public class CardDrawStatistician : ICardDrawStatistician
 {

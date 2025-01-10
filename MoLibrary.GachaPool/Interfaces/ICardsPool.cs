@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using CardPool.Conventions;
-using CardPool.Implements;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Implements;
 
-namespace CardPool.Interfaces;
+namespace MoLibrary.GachaPool.Interfaces;
 
 /// <summary>
 /// Defines the contract for a card pool that manages cards and their probabilities.

@@ -1,8 +1,8 @@
-using CardPool.Implements;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Implements;
+using MoLibrary.GachaPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CardPool.Extensions;
+namespace MoLibrary.GachaPool.Extensions;
 
 /// <summary>
 /// Extension methods for configuring CardPool services in an IServiceCollection.

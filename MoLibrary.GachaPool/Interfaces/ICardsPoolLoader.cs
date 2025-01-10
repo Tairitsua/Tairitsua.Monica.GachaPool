@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CardPool.Interfaces;
+namespace MoLibrary.GachaPool.Interfaces;
 
 /// <summary>
 /// Defines the contract for loading and configuring card pools.

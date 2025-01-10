@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardPool.Conventions;
-using CardPool.Interfaces;
+using MoLibrary.GachaPool.Conventions;
+using MoLibrary.GachaPool.Interfaces;
 
-namespace CardPool.Implements;
+namespace MoLibrary.GachaPool.Implements;
 
 /// <summary>
 /// Base class for memory-based card pool loaders.

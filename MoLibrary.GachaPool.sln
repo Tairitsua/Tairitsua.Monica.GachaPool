@@ -1,8 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardPool", "CardPool\CardPool.csproj", "{23234511-2FE9-4010-9165-31E3AD5F3808}"
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoLibrary.GachaPool", "MoLibrary.GachaPool\MoLibrary.GachaPool.csproj", "{23234511-2FE9-4010-9165-31E3AD5F3808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardPool.Tests", "CardPool.Tests\CardPool.Tests.csproj", "{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoLibrary.GachaPool.Tests", "MoLibrary.GachaPool.Tests\MoLibrary.GachaPool.Tests.csproj", "{35E7D9F8-AC05-4B4C-961C-C9A6A0D930F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

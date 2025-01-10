@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CardPool.Conventions;
+namespace MoLibrary.GachaPool.Conventions;
 
 /// <summary>
 /// Represents a detailed report of card draw statistics.
