@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using MoLibrary.GachaPool.Conventions;
 using MoLibrary.GachaPool.Implements;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MoLibrary.GachaPool.Conventions;
 
 namespace MoLibrary.GachaPool.Interfaces;
 

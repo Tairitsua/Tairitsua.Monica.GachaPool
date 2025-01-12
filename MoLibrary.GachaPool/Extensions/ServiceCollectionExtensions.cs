@@ -2,6 +2,7 @@ using MoLibrary.GachaPool.Implements;
 using MoLibrary.GachaPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
+
 namespace MoLibrary.GachaPool.Extensions;
 
 /// <summary>
@@ -22,6 +23,31 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICardsPoolLoader, TMemoryLoader>();
         return services;
     }
+
+
+    //public static void UseCardPoolEndpoints(this IApplicationBuilder app, string? groupName = "GachaPool")
+    //{
+    //    app.UseEndpoints(endpoints =>
+    //    {
+    //        var tagGroup = new List<OpenApiTag>
+    //        {
+    //            new() { Name = groupName, Description = "GachaPool APIs" }
+    //        };
+    //        endpoints.Map("/gacha-pool/", async (HttpResponse response, HttpContext context) =>
+    //        {
+
+
+    //        }).WithName("").WithOpenApi(operation =>
+    //        {
+    //            operation.Summary = "";
+    //            operation.Description = "";
+    //            operation.Tags = tagGroup;
+    //            return operation;
+    //        });
+
+    //    });
+    //}
+
 }
 
 //example
