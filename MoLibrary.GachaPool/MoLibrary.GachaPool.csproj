@@ -14,6 +14,9 @@
         <Authors>Euynac</Authors>
         <Company>MoLibrary</Company>
         <Description>A flexible and efficient .NET library for managing gacha pools with probability-based drawing mechanisms. Perfect for games or applications requiring probability-based item selection.</Description>
+        <PackageReleaseNotes>
+	        - Support multiple frameworks and conditional compilation
+		</PackageReleaseNotes>
         <PackageTags>gacha;pool;probability;game;random;drawing;cards</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/Euynac/MoLibrary.GachaPool</PackageProjectUrl>
@@ -29,6 +32,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <!-- Conditional compilation for .NET Standard 2.1 -->
@@ -44,7 +48,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
