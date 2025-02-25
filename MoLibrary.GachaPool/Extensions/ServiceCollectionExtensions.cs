@@ -1,6 +1,7 @@
 using MoLibrary.GachaPool.Implements;
 using MoLibrary.GachaPool.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
 
 
 namespace MoLibrary.GachaPool.Extensions;
@@ -24,7 +25,16 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-
+    /// <summary>
+    /// Add autoload card pool
+    /// </summary>
+    /// <param name="app"></param>
+    public static void UseCardPool(this IApplicationBuilder app)
+    {
+        var loader = app.ApplicationServices.GetRequiredService<ICardsPoolLoader>();
+        var manager = app.ApplicationServices.GetRequiredService<ICardPoolManager>();
+        loader.LoadPoolsAsync(manager);
+    }
     //public static void UseCardPoolEndpoints(this IApplicationBuilder app, string? groupName = "GachaPool")
     //{
     //    app.UseEndpoints(endpoints =>

@@ -18,7 +18,7 @@ public abstract class CardsPoolByMemoryProvider : ICardsPoolLoader
     /// Configures the card pools that will be loaded.
     /// This method should be implemented by derived classes to set up their specific pool configurations.
     /// </summary>
-    public abstract void ConfigurePools();
+    public abstract Task ConfigurePools();
 
     /// <summary>
     /// Protected method for derived classes to configure a pool with custom configuration.
@@ -48,21 +48,19 @@ public abstract class CardsPoolByMemoryProvider : ICardsPoolLoader
     }
 
     /// <inheritdoc />
-    public Task LoadPoolsAsync(ICardPoolManager manager)
+    public async Task LoadPoolsAsync(ICardPoolManager manager)
     {
         // Ensure pools are configured
         if (_poolConfigurations.Count == 0)
         {
-            ConfigurePools();
+            await ConfigurePools();
         }
-
+        
         foreach (var (poolName, configure) in _poolConfigurations)
         {
             var pool = new CardsPool();
             configure(pool);
             manager.AddOrUpdatePool(poolName, pool);
         }
-
-        return Task.CompletedTask;
     }
 } 

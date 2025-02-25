@@ -10,8 +10,8 @@ namespace MoLibrary.GachaPool.Implements;
 /// </summary>
 public class CardPoolManager : ICardPoolManager
 {
-    private readonly ConcurrentDictionary<string, ICardsPool> _pools = new();
-    private readonly ConcurrentDictionary<string, ICardDrawer> _drawers = new();
+    private static readonly ConcurrentDictionary<string, ICardsPool> _pools = new();
+    private static readonly ConcurrentDictionary<string, ICardDrawer> _drawers = new();
 
     /// <inheritdoc />
     public ICardsPool? GetPool(string poolName)

@@ -10,7 +10,7 @@ public interface ICardsPoolLoader
     /// <summary>
     /// Configures the card pools that will be loaded.
     /// </summary>
-    void ConfigurePools();
+    Task ConfigurePools();
 
     /// <summary>
     /// Loads the configured card pools into the specified manager.
