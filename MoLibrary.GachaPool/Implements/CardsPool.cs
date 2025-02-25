@@ -22,7 +22,12 @@ public class CardsPool : ICardsPool
     /// <summary>
     /// The whole probability setting of cards which have the same specific rarity.
     /// </summary>
-    public Dictionary<CardRarity, double> RarityProbabilitySetting { get; } = new();
+    public Dictionary<CardRarity, double> RarityProbabilitySetting { get; } = [];
+
+    /// <summary>
+    /// Tells pool how to create a card instance from a custom card object.
+    /// </summary>
+    public Dictionary<Type, Action<Card, object>> CustomCardFactory { get; } = [];
 
     /// <summary>
     /// The all cards in pool. 
@@ -70,6 +75,12 @@ public class CardsPool : ICardsPool
         }
     }
 
+    public void SetCustomCardMapping<TCard>(Action<Card, TCard> action) where TCard : notnull
+    {
+        CustomCardFactory[typeof(TCard)] = (card, obj) => action(card, (TCard)obj);
+    }
+
+
     #region AlterPoolCards
 
     /// <summary>
@@ -94,6 +105,21 @@ public class CardsPool : ICardsPool
         {
             _buildPoolLockSlim.ExitWriteLock();
         }
+    }
+
+    /// <summary>
+    /// Adds one or more cards to the pool.
+    /// </summary>
+    /// <param name="cards">The cards to add.</param>
+    public void AddCustomCards<TCard>(params IEnumerable<TCard> cards) where TCard : notnull
+    {
+        var factory = CustomCardFactory.GetValueOrDefault(typeof(TCard));
+        AddCards(cards.Select(p =>
+        {
+            var card = new Card<TCard>(p);
+            factory?.Invoke(card, p);
+            return card;
+        }));
     }
 
     /// <summary>

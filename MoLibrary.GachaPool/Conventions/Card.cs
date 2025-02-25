@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 
 namespace MoLibrary.GachaPool.Conventions;
-
 public abstract class Card
 {
     /// <summary>
