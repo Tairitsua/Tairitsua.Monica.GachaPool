@@ -114,7 +114,7 @@ public class IntegrationTests
 /// </summary>
 public class TestCardPoolLoader : CardsPoolByMemoryProvider
 {
-    public override void ConfigurePools()
+    public override Task ConfigurePools()
     {
         // Configure a standard test pool
         ConfigurePool("TestPool", pool =>
@@ -147,5 +147,7 @@ public class TestCardPoolLoader : CardsPoolByMemoryProvider
             pool.AddCards(limitedCard, normalCard);
             pool.BuildPool();
         });
+
+        return Task.CompletedTask;
     }
 } 
