@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      MONICA_SOURCE_ROOT: ${{ github.workspace }}/.dependencies/Monica
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Check out the Monica rc.6 source contract
+        uses: actions/checkout@v4
+        with:
+          repository: Tairitsua/Monica
+          ref: 6b735c7fe7c0e0d650b0edaf54f82171449fd06e
+          path: .dependencies/Monica
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate package contract
+        run: python scripts/validate_package.py --root .
+
+      - name: Validate localization
+        run: python scripts/validate_localization.py --root . --strict
+
+      - name: Restore
+        run: dotnet restore Euynac.Monica.GachaPool.slnx -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+
+      - name: Build
+        run: dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+
+      - name: Test
+        run: dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+
+      - name: Pack
+        run: dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+
+      - name: Inspect package artifacts
+        run: python scripts/inspect_package.py --root . --artifacts artifacts
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg

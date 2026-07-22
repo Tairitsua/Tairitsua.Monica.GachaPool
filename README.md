@@ -1,160 +1,123 @@
-# MoLibrary.GachaPool
+# Euynac.Monica.GachaPool
 
-[![NuGet](https://img.shields.io/nuget/v/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
-[![Tests](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml/badge.svg)](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/Euynac/MoLibrary.GachaPool/branch/main/graph/badge.svg)](https://codecov.io/gh/Euynac/MoLibrary.GachaPool)
+[![NuGet](https://img.shields.io/nuget/v/Euynac.Monica.GachaPool.svg)](https://www.nuget.org/packages/Euynac.Monica.GachaPool)
+[![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
-MoLibrary.GachaPool is a flexible and efficient .NET library for managing gacha pools with probability-based drawing mechanisms. It provides a robust foundation for implementing gacha systems in games or any application requiring probability-based item selection.
+[简体中文](README.zh_CN.md)
 
-## Language
+![Monica Compatibility Mark](monica-compatibility-mark.png)
 
-English | [简体中文](README.zh_CN.md)
+**Euynac.Monica.GachaPool** is a complete rewrite of the original MoLibrary.GachaPool as a Monica ecosystem package. One NuGet package contains two coherent Monica modules:
 
-## Features
+- **Euynac.Monica.GachaPool** — typed, thread-safe infrastructure and Facade
+- **Euynac.Monica.GachaPool.UI** — localized MudBlazor dashboard
 
-- 🎯 Probability-based gacha drawing system
-- 🔄 Support for multiple gacha pools
-- 🎲 Customizable rarity and probability settings
-- 📊 Built-in draw statistics tracking
-- 🧩 Generic type support for custom item types
-- 🔌 Easy integration with dependency injection
-- 🔒 Thread-safe operations
-- 🚀 High-performance implementation
+This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
 
-## Installation
+## Highlights
 
-Install the package via NuGet:
+- Strongly typed prize values without sacrificing UI-safe snapshots
+- Explicit rarity probabilities and weighted prizes within each rarity
+- Intentional no-prize probability when configured rarity totals are below 100%
+- Finite inventory with atomic depletion and probability redistribution
+- Include, exclude, and rarity-constrained draws
+- Multiple host-owned pools, bounded batch draws, recent history, and observed statistics
+- English and Simplified Chinese Monica UI with responsive theme-token styling
+- MIT-licensed source, symbols, Source Link, and NuGet Trusted Publishing workflow
 
-```bash
-dotnet add package MoLibrary.GachaPool
-```
+## Requirements
 
-## Quick Start
+- .NET 10
+- Monica 1.0.0-rc.6 or later in the same prerelease line
 
-1. First, create your gacha pool loader by inheriting from `CardsPoolByMemoryProvider`:
+Because the Monica dependency is prerelease, this package also remains prerelease.
 
-```csharp
-public class MyGameGachaPoolLoader : CardsPoolByMemoryProvider
-{
-    public override void ConfigurePools()
+## Install
+
+    dotnet add package Euynac.Monica.GachaPool --prerelease
+
+## Define and register a pool
+
+    using Euynac.Monica.GachaPool.Models;
+    using Euynac.Monica.GachaPool.Modules;
+
+    var featuredPool = GachaPoolBuilder
+        .Create<Reward>("featured", "Featured Rewards")
+        .WithDescription("A permanent pool with a limited headline reward.")
+        .SetRarityProbability(GachaRarity.OneStar, 0.75)
+        .SetRarityProbability(GachaRarity.ThreeStar, 0.20)
+        .SetRarityProbability(GachaRarity.FiveStar, 0.04)
+        .AddPrize("coins", "Coin Bundle", new Reward("currency.coins", 100), GachaRarity.OneStar, weight: 3)
+        .AddPrize("profile-frame", "Aurora Frame", new Reward("cosmetic.aurora-frame", 1), GachaRarity.ThreeStar)
+        .AddPrize(
+            "companion",
+            "Aurora Companion",
+            new Reward("companion.aurora", 1),
+            GachaRarity.FiveStar,
+            initialStock: 5)
+        .Build();
+
+    builder.AddMonica(monica =>
     {
-        // Configure a standard pool with integer-based items
-        ConfigurePool("standardPool", pool =>
+        monica.AddGachaPool()
+            .AddPool(featuredPool);
+
+        // Optional: adds the Monica Shell dashboard and transitively registers infrastructure.
+        monica.AddGachaPoolUI();
+    });
+
+    public sealed record Reward(string Sku, int Quantity);
+
+The configured rarity probabilities total 99%, so unrestricted draws retain a 1% no-prize outcome. Within each rarity, currently available prizes share that tier according to their relative weights.
+
+## Draw typed values
+
+    using Euynac.Monica.GachaPool.Abstractions;
+
+    public sealed class RewardService(IGachaPoolCatalog pools)
+    {
+        public Reward? DrawFeaturedReward()
         {
-            var standardItems = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
-            pool.AddCards(standardItems);
-            pool.BuildPool();
-        });
-
-        // Configure probability settings for different rarities
-        ConfigurePool("customPool", pool =>
-        {
-            pool.SetPoolRarityProbability(CardRarity.OneStar, 0.7)
-                .SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
-            // Add your items...
-            pool.BuildPool();
-        });
-    }
-}
-```
-
-2. Register the services in your application:
-
-```csharp
-services.AddMemoryCardPool<MyGameGachaPoolLoader>();
-```
-
-3. Use the gacha pool manager in your code:
-
-```csharp
-public class GameService
-{
-    private readonly ICardPoolManager _poolManager;
-
-    public GameService(ICardPoolManager poolManager)
-    {
-        _poolManager = poolManager;
+            var result = pools.Draw<Reward>("featured");
+            return result.TryGetValue(out var reward) ? reward : null;
+        }
     }
 
-    public Card DrawItem(string poolName)
-    {
-        var drawer = _poolManager.GetDrawer(poolName);
-        return drawer?.DrawCard();
-    }
+`TryGetValue` is safe for both reference-type and value-type prizes. The `Value` property is also available after
+`HasPrize` is true and throws when the outcome is `NoPrize` or `Exhausted`.
 
-    public string GetDrawStatistics(string poolName)
-    {
-        var drawer = _poolManager.GetDrawer(poolName);
-        return drawer?.Statistician.GetReport().GetTableString();
-    }
-}
-```
+For API or UI boundaries, inject **GachaPoolFacade**; its methods return Monica **Res**/**Res&lt;T&gt;** envelopes and presentation-safe snapshots.
 
-## Advanced Usage
+## Run the bridge
 
-### Custom Item Types
+The bridge includes two sample pools and starts the localized dashboard at `http://127.0.0.1:5279/euynac-gacha-pool`.
 
-You can create custom item types by inheriting from `Card<T>`:
+    dotnet run --project samples/Euynac.Monica.GachaPool.Bridge/Euynac.Monica.GachaPool.Bridge.csproj
 
-```csharp
-public class CharacterItem : Card<CharacterItem>
-{
-    public string Name { get; set; }
-    public int Level { get; set; }
+Normal builds consume the released Monica 1.0.0-rc.6 packages. Framework contributors can explicitly opt into a
+local Monica source checkout without changing project files:
 
-    public CharacterItem(string name, int level, CardRarity rarity) : base(rarity)
-    {
-        Name = name;
-        Level = level;
-    }
-}
-```
+    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
 
-Then use it with the generic drawer:
+`MonicaSourceRoot` must point to the repository directory containing `Monica.Core`, `Monica.UI`, and
+`Monica.Testing`. No source checkout is discovered implicitly.
 
-```csharp
-var drawer = _poolManager.GetDrawer<CharacterItem>("characterPool");
-var character = drawer?.DrawCard();
-```
+## Build and pack
 
-### Probability Configuration
+    dotnet restore Euynac.Monica.GachaPool.slnx
+    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore
+    dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build
+    dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
 
-You can configure probabilities for different item rarities:
+Releases are immutable SemVer tags such as `v1.0.0-preview.2`. A manual workflow run requires the same version
+without the leading `v`. The publish workflow derives `PackageVersion` from that immutable input, consumes released
+Monica packages, and uses NuGet Trusted Publishing through GitHub OIDC and a protected **nuget** environment.
 
-```csharp
-ConfigurePool("myPool", pool =>
-{
-    pool.SetPoolRarityProbability(CardRarity.OneStar, 0.6)
-        .SetPoolRarityProbability(CardRarity.TwoStar, 0.3)
-        .SetPoolRarityProbability(CardRarity.ThreeStar, 0.1);
-    // Add items...
-    pool.BuildPool();
-});
-```
+## Support and security
 
-### Draw Statistics
-
-The library automatically tracks draw statistics:
-
-```csharp
-var drawer = _poolManager.GetDrawer("myPool");
-var stats = drawer?.Statistician.GetReport().GetTableString();
-Console.WriteLine(stats);
-```
-
-## Performance Considerations
-
-- The library uses thread-safe collections for concurrent access
-- Gacha pools are built once and cached for subsequent draws
-- Drawing operations are optimized using binary search
-- Memory usage is optimized for large pools
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Use [GitHub Issues](https://github.com/Tairitsua/MoLibrary.GachaPool/issues) for defects and feature requests. Report vulnerabilities according to [SECURITY.md](SECURITY.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
+    <RootNamespace>Euynac.Monica.GachaPool.Bridge</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj" />
+  </ItemGroup>
+</Project>

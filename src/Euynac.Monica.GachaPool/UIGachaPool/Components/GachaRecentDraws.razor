@@ -1,0 +1,72 @@
+@inject IStringLocalizer<GachaPoolResource> L
+
+<div class="recent-draws">
+  <MudPaper Class="recent-draws__surface" Elevation="1">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+      <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Secondary" />
+      <MudText Typo="Typo.h6">@L["RecentDraws:Title"]</MudText>
+    </MudStack>
+
+    @if (Draws.Count == 0)
+    {
+      <MudText Class="recent-draws__empty" Typo="Typo.body2" Color="Color.Secondary">
+        @L["RecentDraws:Empty"]
+      </MudText>
+    }
+    else
+    {
+      <div class="recent-draws__list">
+        @foreach (var draw in Draws.Take(12))
+        {
+          <div class="recent-draws__item" @key="draw.Sequence">
+            <MudAvatar Color="@GetColor(draw)" Variant="Variant.Filled" Size="Size.Small">
+              <MudIcon Icon="@GetIcon(draw)" Size="Size.Small" />
+            </MudAvatar>
+            <div class="recent-draws__copy">
+              <MudText Typo="Typo.body2">
+                @(draw.Prize?.DisplayName ?? GetOutcomeLabel(draw))
+              </MudText>
+              <MudText Typo="Typo.caption" Color="Color.Secondary">
+                @L["RecentDraws:Sequence", draw.Sequence] ·
+                @L["RecentDraws:TimestampUtc", draw.DrawnAtUtc.ToString("HH:mm:ss")]
+              </MudText>
+            </div>
+            <MudText Typo="Typo.caption">@draw.ProbabilityAtDraw.ToString("P2")</MudText>
+          </div>
+        }
+      </div>
+    }
+  </MudPaper>
+</div>
+
+@code {
+  [Parameter, EditorRequired]
+  public IReadOnlyList<GachaDrawResult> Draws { get; set; } = [];
+
+  private string GetOutcomeLabel(GachaDrawResult draw)
+  {
+    return draw.Outcome == GachaDrawOutcomeKind.Exhausted
+      ? L["DrawResult:ExhaustedTitle"]
+      : L["DrawResult:NoPrizeTitle"];
+  }
+
+  private static string GetIcon(GachaDrawResult draw)
+  {
+    return draw.Outcome switch
+    {
+      GachaDrawOutcomeKind.Prize => Icons.Material.Filled.Stars,
+      GachaDrawOutcomeKind.Exhausted => Icons.Material.Filled.Inventory2,
+      _ => Icons.Material.Filled.BlurOn
+    };
+  }
+
+  private static Color GetColor(GachaDrawResult draw)
+  {
+    return draw.Outcome switch
+    {
+      GachaDrawOutcomeKind.Prize => Color.Primary,
+      GachaDrawOutcomeKind.Exhausted => Color.Warning,
+      _ => Color.Secondary
+    };
+  }
+}

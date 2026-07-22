@@ -1,0 +1,80 @@
+@inject IStringLocalizer<GachaPoolResource> L
+
+<div class="draw-spotlight @GetOutcomeClass()">
+  <MudPaper Class="draw-spotlight__surface" Elevation="2">
+    @if (Result is null)
+    {
+      <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Color="Color.Primary" Size="Size.Large" />
+      <MudText Typo="Typo.h6">@L["DrawResult:EmptyTitle"]</MudText>
+      <MudText Typo="Typo.body2" Color="Color.Secondary">@L["DrawResult:EmptySubtitle"]</MudText>
+    }
+    else if (Result.Outcome == GachaDrawOutcomeKind.Prize && Result.Prize is not null)
+    {
+      <MudIcon Icon="@Icons.Material.Filled.Stars" Color="@GetColor()" Size="Size.Large" />
+      <MudChip T="string" Color="@GetColor()" Variant="Variant.Filled" Size="Size.Small">
+        @GachaRarityPresentation.GetLabel(L, Result.Prize.Rarity)
+      </MudChip>
+      <MudText Typo="Typo.h4">@Result.Prize.DisplayName</MudText>
+      @if (!string.IsNullOrWhiteSpace(Result.Prize.Description))
+      {
+        <MudText Typo="Typo.body1" Color="Color.Secondary">@Result.Prize.Description</MudText>
+      }
+      <MudText Typo="Typo.caption">
+        @L["DrawResult:Probability", Result.ProbabilityAtDraw.ToString("P2")]
+      </MudText>
+    }
+    else
+    {
+      <MudIcon Icon="@GetIcon()" Color="@GetColor()" Size="Size.Large" />
+      <MudText Typo="Typo.h5">@GetOutcomeTitle()</MudText>
+      <MudText Typo="Typo.body2" Color="Color.Secondary">@GetOutcomeDescription()</MudText>
+    }
+  </MudPaper>
+</div>
+
+@code {
+  [Parameter]
+  public GachaDrawResult? Result { get; set; }
+
+  private Color GetColor()
+  {
+    if (Result?.Prize is not null)
+    {
+      return GachaRarityPresentation.GetColor(Result.Prize.Rarity);
+    }
+
+    return Result?.Outcome == GachaDrawOutcomeKind.Exhausted ? Color.Warning : Color.Secondary;
+  }
+
+  private string GetIcon()
+  {
+    return Result?.Outcome == GachaDrawOutcomeKind.Exhausted
+      ? Icons.Material.Filled.Inventory2
+      : Icons.Material.Filled.BlurOn;
+  }
+
+  private string GetOutcomeTitle()
+  {
+    return Result?.Outcome == GachaDrawOutcomeKind.Exhausted
+      ? L["DrawResult:ExhaustedTitle"]
+      : L["DrawResult:NoPrizeTitle"];
+  }
+
+  private string GetOutcomeDescription()
+  {
+    return Result?.Outcome == GachaDrawOutcomeKind.Exhausted
+      ? L["DrawResult:ExhaustedDescription"]
+      : L["DrawResult:NoPrizeDescription"];
+  }
+
+  private string GetOutcomeClass()
+  {
+    return Result?.Outcome switch
+    {
+      GachaDrawOutcomeKind.Prize => "draw-spotlight--prize",
+      GachaDrawOutcomeKind.Exhausted => "draw-spotlight--exhausted",
+      GachaDrawOutcomeKind.NoPrize => "draw-spotlight--empty",
+      _ => "draw-spotlight--idle"
+    };
+  }
+}

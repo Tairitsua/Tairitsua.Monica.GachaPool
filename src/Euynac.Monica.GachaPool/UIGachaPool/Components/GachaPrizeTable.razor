@@ -1,0 +1,71 @@
+@inject IStringLocalizer<GachaPoolResource> L
+
+<div class="prize-table">
+  <MudPaper Class="prize-table__surface" Elevation="1">
+    <MudStack Spacing="1">
+      <MudText Typo="Typo.h6">@L["PrizeTable:Title"]</MudText>
+      <MudText Typo="Typo.body2" Color="Color.Secondary">@L["PrizeTable:Subtitle"]</MudText>
+    </MudStack>
+
+    <div class="prize-table__scroll">
+      <MudTable T="GachaEntrySnapshot"
+                Items="@Pool.Entries"
+                Dense="true"
+                Hover="true"
+                Breakpoint="Breakpoint.Sm"
+                Elevation="0">
+        <HeaderContent>
+          <MudTh>@L["PrizeTable:Prize"]</MudTh>
+          <MudTh>@L["PrizeTable:Rarity"]</MudTh>
+          <MudTh>@L["PrizeTable:Probability"]</MudTh>
+          <MudTh>@L["PrizeTable:Observed"]</MudTh>
+          <MudTh>@L["PrizeTable:Stock"]</MudTh>
+          <MudTh>@L["PrizeTable:Draws"]</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="entry">
+          <MudTd DataLabel="@L["PrizeTable:Prize"]">
+            <MudStack Spacing="0">
+              <MudText Typo="Typo.body2"><strong>@entry.Prize.DisplayName</strong></MudText>
+              @if (!string.IsNullOrWhiteSpace(entry.Prize.Description))
+              {
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@entry.Prize.Description</MudText>
+              }
+            </MudStack>
+          </MudTd>
+          <MudTd DataLabel="@L["PrizeTable:Rarity"]">
+            <MudChip T="string" Color="@GachaRarityPresentation.GetColor(entry.Prize.Rarity)" Size="Size.Small" Variant="Variant.Filled">
+              @GachaRarityPresentation.GetLabel(L, entry.Prize.Rarity)
+            </MudChip>
+          </MudTd>
+          <MudTd DataLabel="@L["PrizeTable:Probability"]">
+            <MudText Typo="Typo.body2">@entry.Probability.ToString("P2")</MudText>
+            <MudProgressLinear Color="@GachaRarityPresentation.GetColor(entry.Prize.Rarity)"
+                               Value="@(entry.Probability * 100)"
+                               Rounded="true"
+                               Size="Size.Small" />
+          </MudTd>
+          <MudTd DataLabel="@L["PrizeTable:Observed"]">@entry.ObservedProbability.ToString("P2")</MudTd>
+          <MudTd DataLabel="@L["PrizeTable:Stock"]">
+            @if (entry.RemainingStock is null)
+            {
+              <MudText Typo="Typo.body2">@L["PrizeTable:Unlimited"]</MudText>
+            }
+            else
+            {
+              <MudText Typo="Typo.body2" Color="@(entry.IsAvailable ? Color.Inherit : Color.Error)">
+                @entry.RemainingStock / @entry.InitialStock
+              </MudText>
+            }
+          </MudTd>
+          <MudTd DataLabel="@L["PrizeTable:Draws"]">@entry.DrawCount</MudTd>
+        </RowTemplate>
+      </MudTable>
+    </div>
+  </MudPaper>
+</div>
+
+@code {
+  [Parameter, EditorRequired]
+  public GachaPoolSnapshot Pool { get; set; } = null!;
+
+}

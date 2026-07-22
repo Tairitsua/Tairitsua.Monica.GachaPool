@@ -1,0 +1,98 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SemVer package version without a leading v (for example, 1.0.0-preview.2)
+        required: true
+        type: string
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: nuget
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve immutable package version
+        id: package-version
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_VERSION: ${{ inputs.version }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            package_version="${TAG_NAME#v}"
+          else
+            package_version="$MANUAL_VERSION"
+          fi
+
+          semver_pattern='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?(\+[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$'
+          if [[ ! "$package_version" =~ $semver_pattern ]]; then
+            echo "Invalid SemVer package version: $package_version" >&2
+            exit 1
+          fi
+
+          monica_version="$(sed -n 's/.*<MonicaVersion>\([^<]*\)<\/MonicaVersion>.*/\1/p' Directory.Build.props | head -n 1)"
+          if [[ -z "$monica_version" ]]; then
+            echo "Could not resolve MonicaVersion from Directory.Build.props." >&2
+            exit 1
+          fi
+
+          if [[ "$monica_version" == *-* && "$package_version" != *-* ]]; then
+            echo "A stable package cannot depend on prerelease Monica $monica_version." >&2
+            exit 1
+          fi
+
+          echo "value=$package_version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate package contract
+        run: python scripts/validate_package.py --root . --package-version "${{ steps.package-version.outputs.value }}"
+
+      - name: Validate localization
+        run: python scripts/validate_localization.py --root . --strict
+
+      - name: Restore
+        run: dotnet restore Euynac.Monica.GachaPool.slnx -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+
+      - name: Build
+        run: dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+
+      - name: Test
+        run: dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+
+      - name: Pack
+        run: dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+
+      - name: Inspect package artifacts
+        run: python scripts/inspect_package.py --root . --artifacts artifacts --package-version "${{ steps.package-version.outputs.value }}"
+
+      - name: Exchange OIDC token for a temporary NuGet key
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json

@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <PackageId>Euynac.Monica.GachaPool</PackageId>
+    <AssemblyName>Euynac.Monica.GachaPool</AssemblyName>
+    <RootNamespace>Euynac.Monica.GachaPool</RootNamespace>
+    <Version>1.0.0-preview.1</Version>
+    <Authors>Euynac</Authors>
+    <NuGetOwner>Euynac</NuGetOwner>
+    <Company>Euynac</Company>
+    <Product>Euynac Monica GachaPool</Product>
+    <Copyright>Copyright © 2025 Momean; 2026 Euynac</Copyright>
+    <PackageDescription>A typed, thread-safe gacha pool engine for Monica with limited inventory, statistics, fluent host composition, and a localized MudBlazor dashboard.</PackageDescription>
+    <PackageTags>monica;monica-module;monica-ecosystem-v1;monica-ui;gacha;probability;random;game;blazor;mudblazor</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Tairitsua/MoLibrary.GachaPool</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Tairitsua/MoLibrary.GachaPool</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>monica-compatibility-mark.png</PackageIcon>
+    <PackageReleaseNotes>First Monica ecosystem preview: rewritten weighted draw engine, multi-pool catalog, statistics, limited inventory, and localized UI dashboard.</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <GenerateStaticWebAssetsManifest>true</GenerateStaticWebAssetsManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MonicaSourceRoot)' != ''">
+    <ProjectReference Include="$(MonicaSourceRoot)/Monica.Core/Monica.Core.csproj" />
+    <ProjectReference Include="$(MonicaSourceRoot)/Monica.UI/Monica.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MonicaSourceRoot)' == ''">
+    <PackageReference Include="Monica.Core" Version="$(MonicaVersion)" />
+    <PackageReference Include="Monica.UI" Version="$(MonicaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Localization/**/*.json" />
+    <EmbeddedResource Include="Localization/**/*.json" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../README.zh_CN.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../monica-compatibility-mark.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

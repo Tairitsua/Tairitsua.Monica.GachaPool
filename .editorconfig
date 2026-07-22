@@ -1,0 +1,18 @@
+root = true
+
+[*.{cs,csproj,props,targets,slnx,razor,json,md,yml,yaml}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+[*.{csproj,props,targets,slnx,razor,json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+dotnet_sort_system_directives_first = true
+csharp_style_namespace_declarations = file_scoped:error
+csharp_style_prefer_primary_constructors = true:suggestion

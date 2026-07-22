@@ -1,172 +1,125 @@
-# MoLibrary.GachaPool
+# Euynac.Monica.GachaPool
 
-[![NuGet](https://img.shields.io/nuget/v/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/MoLibrary.GachaPool.svg)](https://www.nuget.org/packages/MoLibrary.GachaPool)
-[![Tests](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml/badge.svg)](https://github.com/Euynac/MoLibrary.GachaPool/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/Euynac/MoLibrary.GachaPool/branch/main/graph/badge.svg)](https://codecov.io/gh/Euynac/MoLibrary.GachaPool)
+[![NuGet](https://img.shields.io/nuget/v/Euynac.Monica.GachaPool.svg)](https://www.nuget.org/packages/Euynac.Monica.GachaPool)
+[![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
-MoLibrary.GachaPool 是一个灵活高效的 .NET 抽卡（扭蛋）系统管理库，提供基于概率的抽取机制。它为游戏或任何需要概率选择物品的应用程序提供了强大的基础设施。
+[English](README.md)
 
-## 语言
+![Monica Compatibility Mark](monica-compatibility-mark.png)
 
-[English](README.md) | 简体中文
+**Euynac.Monica.GachaPool** 是对原 MoLibrary.GachaPool 的完整重写，并按 Monica 第三方生态规范重新设计。一个 NuGet 包内包含两个紧密关联的 Monica 模块：
 
-## 特性
+- **Euynac.Monica.GachaPool**：强类型、线程安全的基础设施和 Facade
+- **Euynac.Monica.GachaPool.UI**：支持中英文的 MudBlazor 仪表板
 
-- 🎯 基于概率的抽卡系统
-- 🔄 支持多个扭蛋池管理
-- 🎲 可自定义稀有度和概率设置
-- 📊 内置抽取统计跟踪
-- 🧩 支持自定义物品类型的泛型实现
-- 🔌 易于集成的依赖注入支持
-- 🔒 线程安全操作
-- 🚀 高性能实现
+This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
+
+以上声明表示：本社区包由独立开发者维护，与 Monica 项目不存在隶属、背书或官方支持关系。
+
+## 主要特性
+
+- 奖品值保持强类型，同时提供适合 UI 和 API 的安全快照
+- 明确配置各稀有度的绝对概率，并在同稀有度内使用相对权重
+- 当稀有度概率总和低于 100% 时，剩余部分作为明确的未中奖概率
+- 有限库存原子扣减，库存耗尽后自动重算同稀有度内的概率
+- 支持指定稀有度、仅包含或排除指定奖品的条件抽取
+- 多卡池、宿主隔离、批量抽取、最近记录及实际概率统计
+- 响应式、主题令牌驱动的中英文 Monica UI
+- MIT 开源、符号包、Source Link 和 NuGet OIDC 发布流程
+
+## 环境要求
+
+- .NET 10
+- Monica 1.0.0-rc.6 或同一预发布线的更高版本
+
+由于依赖的 Monica 仍处于预发布阶段，本包也必须保持预发布版本。
 
 ## 安装
 
-通过 NuGet 安装包：
+    dotnet add package Euynac.Monica.GachaPool --prerelease
 
-```bash
-dotnet add package MoLibrary.GachaPool
-```
+## 定义并注册卡池
 
-## 快速开始
+    using Euynac.Monica.GachaPool.Models;
+    using Euynac.Monica.GachaPool.Modules;
 
-1. 首先，创建你的扭蛋池加载器，继承 `CardsPoolByMemoryProvider`：
+    var featuredPool = GachaPoolBuilder
+        .Create<Reward>("featured", "精选奖励")
+        .WithDescription("包含限量头奖的常驻卡池。")
+        .SetRarityProbability(GachaRarity.OneStar, 0.75)
+        .SetRarityProbability(GachaRarity.ThreeStar, 0.20)
+        .SetRarityProbability(GachaRarity.FiveStar, 0.04)
+        .AddPrize("coins", "金币包", new Reward("currency.coins", 100), GachaRarity.OneStar, weight: 3)
+        .AddPrize("profile-frame", "极光头像框", new Reward("cosmetic.aurora-frame", 1), GachaRarity.ThreeStar)
+        .AddPrize(
+            "companion",
+            "极光伙伴",
+            new Reward("companion.aurora", 1),
+            GachaRarity.FiveStar,
+            initialStock: 5)
+        .Build();
 
-```csharp
-public class MyGameGachaPoolLoader : CardsPoolByMemoryProvider
-{
-    public override void ConfigurePools()
+    builder.AddMonica(monica =>
     {
-        // 配置一个使用整数作为物品的标准池
-        ConfigurePool("standardPool", pool =>
+        monica.AddGachaPool()
+            .AddPool(featuredPool);
+
+        // 可选：加入 Monica Shell 仪表板，并自动依赖基础设施模块。
+        monica.AddGachaPoolUI();
+    });
+
+    public sealed record Reward(string Sku, int Quantity);
+
+示例中的稀有度概率合计为 99%，因此非条件抽取会保留 1% 的未中奖概率。同一稀有度内，当前仍有库存的奖品按相对权重分配该档概率。
+
+## 执行强类型抽取
+
+    using Euynac.Monica.GachaPool.Abstractions;
+
+    public sealed class RewardService(IGachaPoolCatalog pools)
+    {
+        public Reward? DrawFeaturedReward()
         {
-            var standardItems = Card<int>.CreateMultiCards(CardRarity.OneStar, 1, 2, 3, 4, 5);
-            pool.AddCards(standardItems);
-            pool.BuildPool();
-        });
-
-        // 配置带有自定义概率设置的池
-        ConfigurePool("customPool", pool =>
-        {
-            pool.SetPoolRarityProbability(CardRarity.OneStar, 0.7)
-                .SetPoolRarityProbability(CardRarity.TwoStar, 0.3);
-            // 添加你的物品...
-            pool.BuildPool();
-        });
-    }
-}
-```
-
-2. 在应用程序中注册服务：
-
-```csharp
-services.AddMemoryCardPool<MyGameGachaPoolLoader>();
-```
-
-3. 在代码中使用扭蛋池管理器：
-
-```csharp
-public class GameService
-{
-    private readonly ICardPoolManager _poolManager;
-
-    public GameService(ICardPoolManager poolManager)
-    {
-        _poolManager = poolManager;
+            var result = pools.Draw<Reward>("featured");
+            return result.TryGetValue(out var reward) ? reward : null;
+        }
     }
 
-    public Card DrawItem(string poolName)
-    {
-        var drawer = _poolManager.GetDrawer(poolName);
-        return drawer?.DrawCard();
-    }
+`TryGetValue` 对引用类型和值类型奖品都安全。也可以在 `HasPrize` 为 `true` 后读取 `Value`；当结果为
+`NoPrize` 或 `Exhausted` 时直接读取 `Value` 会抛出异常。
 
-    public string GetDrawStatistics(string poolName)
-    {
-        var drawer = _poolManager.GetDrawer(poolName);
-        return drawer?.Statistician.GetReport().GetTableString();
-    }
-}
-```
+API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica 的 **Res**/**Res&lt;T&gt;**，并只暴露适合展示的快照。
 
-## 高级用法
+## 启动桥接 Demo
 
-### 自定义物品类型
+桥接项目内置两个示例卡池，启动后访问 **http://127.0.0.1:5279/euynac-gacha-pool**。
 
-你可以通过继承 `Card<T>` 来创建自定义物品类型：
+    dotnet run --project samples/Euynac.Monica.GachaPool.Bridge/Euynac.Monica.GachaPool.Bridge.csproj
 
-```csharp
-public class CharacterItem : Card<CharacterItem>
-{
-    public string Name { get; set; }
-    public int Level { get; set; }
+正常构建直接使用已发布的 Monica 1.0.0-rc.6 包。参与框架开发时，可以显式切换为本地 Monica 源码，
+无需修改项目文件：
 
-    public CharacterItem(string name, int level, CardRarity rarity) : base(rarity)
-    {
-        Name = name;
-        Level = level;
-    }
-}
-```
+    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
 
-然后使用泛型抽取器：
+`MonicaSourceRoot` 必须指向包含 `Monica.Core`、`Monica.UI` 和 `Monica.Testing` 的仓库目录；项目不会自动
+探测任何同级或固定路径。
 
-```csharp
-var drawer = _poolManager.GetDrawer<CharacterItem>("characterPool");
-var character = drawer?.DrawCard();
-```
+## 构建与打包
 
-### 概率配置
+    dotnet restore Euynac.Monica.GachaPool.slnx
+    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore
+    dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build
+    dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
 
-你可以为不同稀有度的物品配置概率：
+发布使用不可变 SemVer 标签（例如 `v1.0.0-preview.2`）；手动触发工作流时输入不带 `v` 的同一版本号。
+工作流据此生成 `PackageVersion`，使用已发布的 Monica 包，并通过 GitHub OIDC 与受保护的 `nuget`
+环境执行 NuGet Trusted Publishing。
 
-```csharp
-ConfigurePool("myPool", pool =>
-{
-    pool.SetPoolRarityProbability(CardRarity.OneStar, 0.6)
-        .SetPoolRarityProbability(CardRarity.TwoStar, 0.3)
-        .SetPoolRarityProbability(CardRarity.ThreeStar, 0.1);
-    // 添加物品...
-    pool.BuildPool();
-});
-```
+## 支持与安全
 
-### 抽取统计
-
-库会自动跟踪抽取统计信息：
-
-```csharp
-var drawer = _poolManager.GetDrawer("myPool");
-var stats = drawer?.Statistician.GetReport().GetTableString();
-Console.WriteLine(stats);
-```
-
-## 工作原理
-
-1. **扭蛋池构建**：
-   - 每个物品都有一个相对于整个池的真实概率
-   - 可以设置物品的稀有度或单独设置概率
-   - 系统根据设置自动生成真实概率
-   - 生成区间布局作为后续抽取的基础
-
-2. **抽取机制**：
-   - 使用二分查找快速定位概率区间
-   - 采用线程安全的随机数生成
-   - 支持条件抽取（指定稀有度、包含/排除特定物品）
-
-## 性能考虑
-
-- 使用线程安全的集合实现并发访问
-- 扭蛋池构建后会被缓存以供后续抽取使用
-- 抽取操作使用二分查找优化
-- 针对大型池优化了内存使用
-
-## 贡献
-
-欢迎提交 Pull Request 来帮助改进这个项目！
+缺陷和功能建议请提交到 [GitHub Issues](https://github.com/Tairitsua/MoLibrary.GachaPool/issues)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
 ## 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 MIT 许可证，详见 [LICENSE](LICENSE)。

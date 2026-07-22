@@ -1,0 +1,40 @@
+.recent-draws {
+  min-width: 0;
+  height: 100%;
+}
+
+.recent-draws ::deep .recent-draws__surface {
+  min-width: 0;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--mud-palette-lines-default);
+  border-radius: var(--mud-default-borderradius);
+}
+
+.recent-draws ::deep .recent-draws__empty {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.recent-draws__list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.recent-draws__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--mud-palette-lines-default);
+  border-radius: var(--mud-default-borderradius);
+  background: color-mix(in srgb, var(--mud-palette-primary) 4%, var(--mud-palette-surface));
+}
+
+.recent-draws__copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

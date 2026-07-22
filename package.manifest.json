@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "packageId": "Euynac.Monica.GachaPool",
+  "version": "1.0.0-preview.1",
+  "description": "A typed, thread-safe gacha pool engine and interactive Monica dashboard.",
+  "authors": "Euynac",
+  "nugetOwner": "Euynac",
+  "repositoryUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool",
+  "projectUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool",
+  "supportUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool/issues",
+  "securityUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool/security/policy",
+  "source": {
+    "available": true,
+    "provider": "github",
+    "sourceLinkVersion": "10.0.102"
+  },
+  "distribution": "public",
+  "publishing": {
+    "target": "nuget.org"
+  },
+  "targetFramework": "net10.0",
+  "monicaVersion": "1.0.0-rc.6",
+  "capabilityTags": [
+    "gacha",
+    "probability"
+  ],
+  "license": {
+    "openSource": true,
+    "expression": "MIT"
+  },
+  "branding": {
+    "icon": {
+      "kind": "compatibility-mark"
+    },
+    "showOpenSourceBadge": false
+  },
+  "modules": [
+    {
+      "name": "GachaPool",
+      "kind": "infrastructure",
+      "key": "Euynac.Monica.GachaPool"
+    },
+    {
+      "name": "GachaPoolUI",
+      "kind": "ui",
+      "key": "Euynac.Monica.GachaPool.UI",
+      "dependsOn": [
+        "GachaPool"
+      ]
+    }
+  ]
+}

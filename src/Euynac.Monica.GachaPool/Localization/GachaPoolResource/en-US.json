@@ -1,0 +1,86 @@
+{
+  "Navigation": {
+    "Title": "Gacha Pools",
+    "Category": "Community"
+  },
+  "Page": {
+    "DocumentTitle": "Gacha Pools",
+    "Eyebrow": "Probability studio",
+    "Title": "Gacha Pool Observatory",
+    "Subtitle": "Explore configured odds, run single or batch draws, and watch finite inventory and observed outcomes evolve in real time.",
+    "Loading": "Loading gacha pools..."
+  },
+  "Empty": {
+    "Title": "No pools are registered",
+    "Subtitle": "Register at least one immutable pool definition through AddGachaPool().AddPool(...) to activate this dashboard."
+  },
+  "PoolSelector": {
+    "Label": "Active pool"
+  },
+  "Actions": {
+    "BatchSize": "Batch size",
+    "DrawOnce": "Draw once",
+    "DrawBatch": "Draw batch",
+    "Reset": "Reset pool"
+  },
+  "Metrics": {
+    "TotalDraws": "Total draws",
+    "AvailablePrizes": "Available prizes",
+    "NoPrizeProbability": "Current no-prize chance"
+  },
+  "DrawResult": {
+    "EmptyTitle": "Your next reveal starts here",
+    "EmptySubtitle": "Choose a draw action to reveal a prize and its effective probability.",
+    "Probability": "Effective probability: {0}",
+    "NoPrizeTitle": "No prize this time",
+    "NoPrizeDescription": "The draw landed in the pool's intentionally unassigned probability.",
+    "ExhaustedTitle": "Prize tier exhausted",
+    "ExhaustedDescription": "The draw reached a configured tier with no matching inventory left."
+  },
+  "PrizeTable": {
+    "Title": "Probability and inventory",
+    "Subtitle": "Configured rarity probability is redistributed only among prizes that remain available in that tier.",
+    "Prize": "Prize",
+    "Rarity": "Rarity",
+    "Probability": "Current probability",
+    "Observed": "Observed",
+    "Stock": "Stock",
+    "Draws": "Draws",
+    "Unlimited": "Unlimited"
+  },
+  "RecentDraws": {
+    "Title": "Recent outcomes",
+    "Empty": "No draw history yet.",
+    "Sequence": "Draw #{0}",
+    "TimestampUtc": "{0} UTC"
+  },
+  "Messages": {
+    "NoPoolSelected": "No gacha pool is selected.",
+    "DrawCompleted": "Draw completed.",
+    "BatchCompleted": "Completed {0} draws.",
+    "ResetCompleted": "Pool inventory and statistics were reset.",
+    "UnknownError": "The gacha operation failed."
+  },
+  "ServiceMessages": {
+    "ListFailed": "Could not load gacha pools",
+    "PoolIdInvalid": "A gacha pool identifier is required.",
+    "PoolNotFound": "Gacha pool '{0}' was not found",
+    "GetFailed": "Could not load gacha pool '{0}'",
+    "DrawInvalid": "The draw request is invalid",
+    "DrawFailed": "Could not draw from gacha pool '{0}'",
+    "ResetCompleted": "Gacha pool '{0}' was reset.",
+    "ResetFailed": "Could not reset gacha pool '{0}'"
+  },
+  "Rarity": {
+    "OneStar": "1 star",
+    "TwoStar": "2 stars",
+    "ThreeStar": "3 stars",
+    "FourStar": "4 stars",
+    "FiveStar": "5 stars",
+    "SixStar": "6 stars",
+    "SevenStar": "7 stars",
+    "EightStar": "8 stars",
+    "NineStar": "9 stars",
+    "TenStar": "10 stars"
+  }
+}

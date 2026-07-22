@@ -1,0 +1,86 @@
+{
+  "Navigation": {
+    "Title": "抽卡池",
+    "Category": "社区扩展"
+  },
+  "Page": {
+    "DocumentTitle": "抽卡池",
+    "Eyebrow": "概率实验室",
+    "Title": "抽卡池观测台",
+    "Subtitle": "查看已配置的概率，执行单抽或批量抽取，并实时观察有限库存与实际抽取分布的变化。",
+    "Loading": "正在加载抽卡池..."
+  },
+  "Empty": {
+    "Title": "尚未注册抽卡池",
+    "Subtitle": "请通过 AddGachaPool().AddPool(...) 注册至少一个不可变抽卡池定义，以启用此仪表板。"
+  },
+  "PoolSelector": {
+    "Label": "当前抽卡池"
+  },
+  "Actions": {
+    "BatchSize": "批量次数",
+    "DrawOnce": "单抽",
+    "DrawBatch": "批量抽取",
+    "Reset": "重置卡池"
+  },
+  "Metrics": {
+    "TotalDraws": "累计抽取",
+    "AvailablePrizes": "可用奖品",
+    "NoPrizeProbability": "当前未中奖概率"
+  },
+  "DrawResult": {
+    "EmptyTitle": "下一次揭晓从这里开始",
+    "EmptySubtitle": "选择一种抽取操作，即可查看奖品及本次抽取的实际概率。",
+    "Probability": "本次有效概率：{0}",
+    "NoPrizeTitle": "本次未中奖",
+    "NoPrizeDescription": "本次抽取落在了卡池有意保留的空白概率区间。",
+    "ExhaustedTitle": "该稀有度库存已耗尽",
+    "ExhaustedDescription": "本次抽取命中了一个已无可用奖品库存的概率档位。"
+  },
+  "PrizeTable": {
+    "Title": "概率与库存",
+    "Subtitle": "每个稀有度的配置概率只会在该档位当前仍可用的奖品之间重新分配。",
+    "Prize": "奖品",
+    "Rarity": "稀有度",
+    "Probability": "当前概率",
+    "Observed": "实际占比",
+    "Stock": "库存",
+    "Draws": "抽中次数",
+    "Unlimited": "无限"
+  },
+  "RecentDraws": {
+    "Title": "最近结果",
+    "Empty": "还没有抽取记录。",
+    "Sequence": "第 {0} 抽",
+    "TimestampUtc": "UTC {0}"
+  },
+  "Messages": {
+    "NoPoolSelected": "尚未选择抽卡池。",
+    "DrawCompleted": "抽取完成。",
+    "BatchCompleted": "已完成 {0} 次抽取。",
+    "ResetCompleted": "卡池库存和统计信息已重置。",
+    "UnknownError": "抽卡操作失败。"
+  },
+  "ServiceMessages": {
+    "ListFailed": "无法加载抽卡池",
+    "PoolIdInvalid": "必须提供抽卡池标识符。",
+    "PoolNotFound": "未找到抽卡池“{0}”",
+    "GetFailed": "无法加载抽卡池“{0}”",
+    "DrawInvalid": "抽取请求无效",
+    "DrawFailed": "无法从抽卡池“{0}”执行抽取",
+    "ResetCompleted": "抽卡池“{0}”已重置。",
+    "ResetFailed": "无法重置抽卡池“{0}”"
+  },
+  "Rarity": {
+    "OneStar": "1 星",
+    "TwoStar": "2 星",
+    "ThreeStar": "3 星",
+    "FourStar": "4 星",
+    "FiveStar": "5 星",
+    "SixStar": "6 星",
+    "SevenStar": "7 星",
+    "EightStar": "8 星",
+    "NineStar": "9 星",
+    "TenStar": "10 星"
+  }
+}
