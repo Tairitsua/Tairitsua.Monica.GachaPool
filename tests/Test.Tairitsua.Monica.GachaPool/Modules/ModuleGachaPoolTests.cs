@@ -3,6 +3,7 @@ using System.Text.Json;
 using AwesomeAssertions;
 using Tairitsua.Monica.GachaPool.Abstractions;
 using Tairitsua.Monica.GachaPool.Facades;
+using Tairitsua.Monica.GachaPool.Localization;
 using Tairitsua.Monica.GachaPool.Models;
 using Tairitsua.Monica.GachaPool.Modules;
 using Tairitsua.Monica.GachaPool.Pages;
@@ -10,6 +11,8 @@ using Test.Tairitsua.Monica.GachaPool.Support;
 using Microsoft.AspNetCore.Components;
 using Monica.Core.Modularity.Annotations;
 using Monica.Core.Results;
+using Monica.UI.Shell.Models;
+using Monica.UI.Shell.Support;
 
 namespace Test.Tairitsua.Monica.GachaPool.Modules;
 
@@ -53,6 +56,54 @@ public sealed class ModuleGachaPoolTests
 
         routes.Should().ContainSingle().Which.Should().Be(UIGachaPoolPage.PAGE_URL);
         UIGachaPoolPage.PAGE_URL.Should().Be("/gacha-pool");
+    }
+
+    [Fact]
+    public async Task EnabledUiCompositionRegistersOwnedCategoryPageAndNavigation()
+    {
+        var factory = new GachaPoolTestApplicationFactory(includeUi: true);
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        await using var application = await factory.CreateAsync(cancellationToken: cancellationToken);
+        await using var scope = application.CreateScope(cancellationToken);
+        var registry = scope.Resolve<IPageCatalog>();
+        var categoryId = NavigationCategoryId.Create("Tairitsua.Monica.GachaPool");
+        var category = registry.GetNavigationCategories().Single(item => item.Id == categoryId);
+        var page = registry.GetRegisteredPages().Single(item => item.ComponentType == typeof(UIGachaPoolPage));
+        var navigationItem = registry.GetNavItems().Single(item => item.Href == "gacha-pool");
+
+        category.Id.Should().Be(categoryId);
+        category.Order.Should().Be(450);
+        category.DisplayName.ResourceType.Should().Be(typeof(GachaPoolResource));
+        category.DisplayName.Key.Should().Be("Navigation:Category");
+
+        page.Route.Should().Be("gacha-pool");
+        page.DisplayName.ResourceType.Should().Be(typeof(GachaPoolResource));
+        page.DisplayName.Key.Should().Be("Navigation:Title");
+
+        navigationItem.CategoryId.Should().Be(categoryId);
+        navigationItem.Href.Should().Be("gacha-pool");
+        navigationItem.Order.Should().Be(42);
+    }
+
+    [Fact]
+    public async Task DisabledDashboardContributesNoCategoryPageOrNavigation()
+    {
+        var factory = new GachaPoolTestApplicationFactory(
+            includeUi: true,
+            disableDashboardPage: true,
+            includeShell: true);
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        await using var application = await factory.CreateAsync(cancellationToken: cancellationToken);
+        await using var scope = application.CreateScope(cancellationToken);
+        var registry = scope.Resolve<IPageCatalog>();
+        var categoryId = NavigationCategoryId.Create("Tairitsua.Monica.GachaPool");
+
+        registry.GetNavigationCategories().Should().NotContain(item => item.Id == categoryId);
+        registry.GetRegisteredPages().Should().NotContain(item => item.ComponentType == typeof(UIGachaPoolPage));
+        registry.GetNavItems().Should().NotContain(item =>
+            item.CategoryId == categoryId || item.Href == "gacha-pool");
     }
 
     [Fact]

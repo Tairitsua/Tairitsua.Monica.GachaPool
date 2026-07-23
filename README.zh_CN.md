@@ -13,9 +13,9 @@
 - **Tairitsua.Monica.GachaPool**：强类型、线程安全的基础设施和 Facade
 - **Tairitsua.Monica.GachaPool.UI**：支持中英文的 MudBlazor 仪表板
 
-This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
+Monica compatibility is self-attested by the publisher. This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
 
-以上声明表示：本社区包由独立开发者维护，与 Monica 项目不存在隶属、背书或官方支持关系。
+以上声明表示：Monica 兼容性由发布者自行声明；本社区包由独立开发者维护，与 Monica 项目不存在隶属、背书或官方支持关系。
 
 ## 主要特性
 

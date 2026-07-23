@@ -35,13 +35,19 @@ public sealed class ModuleGachaPoolUI(ModuleGachaPoolUIOption option)
 
         DependsOnModule<ModuleShellUIGuide>().Register()
             .RegisterUIComponents(registry =>
-                registry.RegisterLocalizedComponent<UIGachaPoolPage, GachaPoolResource>(
+            {
+                var categoryId = registry.RegisterLocalizedCategory<GachaPoolResource>(
+                    "Tairitsua.Monica.GachaPool",
+                    "Navigation:Category",
+                    order: 450);
+                registry.RegisterLocalizedPage<UIGachaPoolPage, GachaPoolResource>(
                     UIGachaPoolPage.PAGE_URL,
                     "Navigation:Title",
                     Icons.Material.Filled.AutoAwesome,
-                    "Navigation:Category",
+                    categoryId: categoryId,
                     addToNav: true,
-                    navOrder: 42));
+                    navOrder: 42);
+            });
     }
 }
 

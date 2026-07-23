@@ -4,6 +4,8 @@
 .vs/
 .vscode/
 .dependencies/
+__pycache__/
+*.py[cod]
 .tmp/
 .playwright-cli/
 TestResults/

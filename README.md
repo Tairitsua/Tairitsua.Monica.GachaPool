@@ -13,7 +13,7 @@
 - **Tairitsua.Monica.GachaPool** — typed, thread-safe infrastructure and Facade
 - **Tairitsua.Monica.GachaPool.UI** — localized MudBlazor dashboard
 
-This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
+Monica compatibility is self-attested by the publisher. This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
 
 ## Highlights
 
