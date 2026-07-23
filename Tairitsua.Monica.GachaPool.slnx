@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj" />
+  </Folder>
+</Solution>

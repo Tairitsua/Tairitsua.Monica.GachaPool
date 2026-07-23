@@ -1,7 +1,7 @@
 # Tests
 
 This independently published package keeps its runnable tests in
-`Test.Euynac.Monica.GachaPool`. The publisher-first name intentionally
+`Test.Tairitsua.Monica.GachaPool`. The publisher-first name intentionally
 overrides Monica's first-party `Test.Monica.*` repository convention.
 
 The host tests register only the graph-entry GachaPool UI module so its
@@ -12,6 +12,6 @@ inventory, serialization, host isolation, and concurrency behavior.
 Run one test process at a time. Under WSL, pass the Windows project path:
 
 ```bash
-dotnet test '<windows-path-to-repository>\tests\Test.Euynac.Monica.GachaPool\Test.Euynac.Monica.GachaPool.csproj' \
+dotnet test '<windows-path-to-repository>\tests\Test.Tairitsua.Monica.GachaPool\Test.Tairitsua.Monica.GachaPool.csproj' \
   -p:MonicaSourceRoot='<windows-path-to-Monica-source>'
 ```

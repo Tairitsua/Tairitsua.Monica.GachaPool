@@ -43,16 +43,16 @@ jobs:
         run: python scripts/validate_localization.py --root . --strict
 
       - name: Restore
-        run: dotnet restore Euynac.Monica.GachaPool.slnx -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet restore Tairitsua.Monica.GachaPool.slnx -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
 
       - name: Build
-        run: dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
 
       - name: Test
-        run: dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
 
       - name: Pack
-        run: dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
 
       - name: Inspect package artifacts
         run: python scripts/inspect_package.py --root . --artifacts artifacts

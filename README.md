@@ -1,6 +1,6 @@
-# Euynac.Monica.GachaPool
+# Tairitsua.Monica.GachaPool
 
-[![NuGet](https://img.shields.io/nuget/v/Euynac.Monica.GachaPool.svg)](https://www.nuget.org/packages/Euynac.Monica.GachaPool)
+[![NuGet](https://img.shields.io/nuget/v/Tairitsua.Monica.GachaPool.svg)](https://www.nuget.org/packages/Tairitsua.Monica.GachaPool)
 [![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
@@ -8,10 +8,10 @@
 
 ![Monica Compatibility Mark](monica-compatibility-mark.png)
 
-**Euynac.Monica.GachaPool** is a complete rewrite of the original MoLibrary.GachaPool as a Monica ecosystem package. One NuGet package contains two coherent Monica modules:
+**Tairitsua.Monica.GachaPool** is a complete rewrite of the original MoLibrary.GachaPool as a Monica ecosystem package. One NuGet package contains two coherent Monica modules:
 
-- **Euynac.Monica.GachaPool** — typed, thread-safe infrastructure and Facade
-- **Euynac.Monica.GachaPool.UI** — localized MudBlazor dashboard
+- **Tairitsua.Monica.GachaPool** — typed, thread-safe infrastructure and Facade
+- **Tairitsua.Monica.GachaPool.UI** — localized MudBlazor dashboard
 
 This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
 
@@ -35,12 +35,12 @@ Because the Monica dependency is prerelease, this package also remains prereleas
 
 ## Install
 
-    dotnet add package Euynac.Monica.GachaPool --prerelease
+    dotnet add package Tairitsua.Monica.GachaPool --prerelease
 
 ## Define and register a pool
 
-    using Euynac.Monica.GachaPool.Models;
-    using Euynac.Monica.GachaPool.Modules;
+    using Tairitsua.Monica.GachaPool.Models;
+    using Tairitsua.Monica.GachaPool.Modules;
 
     var featuredPool = GachaPoolBuilder
         .Create<Reward>("featured", "Featured Rewards")
@@ -73,7 +73,7 @@ The configured rarity probabilities total 99%, so unrestricted draws retain a 1%
 
 ## Draw typed values
 
-    using Euynac.Monica.GachaPool.Abstractions;
+    using Tairitsua.Monica.GachaPool.Abstractions;
 
     public sealed class RewardService(IGachaPoolCatalog pools)
     {
@@ -91,24 +91,24 @@ For API or UI boundaries, inject **GachaPoolFacade**; its methods return Monica 
 
 ## Run the bridge
 
-The bridge includes two sample pools and starts the localized dashboard at `http://127.0.0.1:5279/euynac-gacha-pool`.
+The bridge includes two sample pools and starts the localized dashboard at `http://127.0.0.1:5279/tairitsua-gacha-pool`.
 
-    dotnet run --project samples/Euynac.Monica.GachaPool.Bridge/Euynac.Monica.GachaPool.Bridge.csproj
+    dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 
 Normal builds consume the released Monica 1.0.0-rc.6 packages. Framework contributors can explicitly opt into a
 local Monica source checkout without changing project files:
 
-    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
+    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
 
 `MonicaSourceRoot` must point to the repository directory containing `Monica.Core`, `Monica.UI`, and
 `Monica.Testing`. No source checkout is discovered implicitly.
 
 ## Build and pack
 
-    dotnet restore Euynac.Monica.GachaPool.slnx
-    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore
-    dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build
-    dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
+    dotnet restore Tairitsua.Monica.GachaPool.slnx
+    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore
+    dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build
+    dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
 
 Releases are immutable SemVer tags such as `v1.0.0-preview.2`. A manual workflow run requires the same version
 without the leading `v`. The publish workflow derives `PackageVersion` from that immutable input, consumes released

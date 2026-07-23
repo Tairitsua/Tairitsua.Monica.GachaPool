@@ -74,16 +74,16 @@ jobs:
         run: python scripts/validate_localization.py --root . --strict
 
       - name: Restore
-        run: dotnet restore Euynac.Monica.GachaPool.slnx -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+        run: dotnet restore Tairitsua.Monica.GachaPool.slnx -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
 
       - name: Build
-        run: dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+        run: dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
 
       - name: Test
-        run: dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+        run: dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
 
       - name: Pack
-        run: dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
+        run: dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:Version="${{ steps.package-version.outputs.value }}" -p:PackageVersion="${{ steps.package-version.outputs.value }}"
 
       - name: Inspect package artifacts
         run: python scripts/inspect_package.py --root . --artifacts artifacts --package-version "${{ steps.package-version.outputs.value }}"

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "packageId": "Euynac.Monica.GachaPool",
+  "packageId": "Tairitsua.Monica.GachaPool",
   "version": "1.0.0-preview.1",
   "description": "A typed, thread-safe gacha pool engine and interactive Monica dashboard.",
-  "authors": "Euynac",
-  "nugetOwner": "Euynac",
+  "authors": "Tairitsua",
+  "nugetOwner": "Tairitsua",
   "repositoryUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool",
   "projectUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool",
   "supportUrl": "https://github.com/Tairitsua/MoLibrary.GachaPool/issues",
@@ -38,12 +38,12 @@
     {
       "name": "GachaPool",
       "kind": "infrastructure",
-      "key": "Euynac.Monica.GachaPool"
+      "key": "Tairitsua.Monica.GachaPool"
     },
     {
       "name": "GachaPoolUI",
       "kind": "ui",
-      "key": "Euynac.Monica.GachaPool.UI",
+      "key": "Tairitsua.Monica.GachaPool.UI",
       "dependsOn": [
         "GachaPool"
       ]

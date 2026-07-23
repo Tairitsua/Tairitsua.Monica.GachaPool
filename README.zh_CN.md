@@ -1,6 +1,6 @@
-# Euynac.Monica.GachaPool
+# Tairitsua.Monica.GachaPool
 
-[![NuGet](https://img.shields.io/nuget/v/Euynac.Monica.GachaPool.svg)](https://www.nuget.org/packages/Euynac.Monica.GachaPool)
+[![NuGet](https://img.shields.io/nuget/v/Tairitsua.Monica.GachaPool.svg)](https://www.nuget.org/packages/Tairitsua.Monica.GachaPool)
 [![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
@@ -8,10 +8,10 @@
 
 ![Monica Compatibility Mark](monica-compatibility-mark.png)
 
-**Euynac.Monica.GachaPool** 是对原 MoLibrary.GachaPool 的完整重写，并按 Monica 第三方生态规范重新设计。一个 NuGet 包内包含两个紧密关联的 Monica 模块：
+**Tairitsua.Monica.GachaPool** 是对原 MoLibrary.GachaPool 的完整重写，并按 Monica 第三方生态规范重新设计。一个 NuGet 包内包含两个紧密关联的 Monica 模块：
 
-- **Euynac.Monica.GachaPool**：强类型、线程安全的基础设施和 Facade
-- **Euynac.Monica.GachaPool.UI**：支持中英文的 MudBlazor 仪表板
+- **Tairitsua.Monica.GachaPool**：强类型、线程安全的基础设施和 Facade
+- **Tairitsua.Monica.GachaPool.UI**：支持中英文的 MudBlazor 仪表板
 
 This community package is independently maintained and is not affiliated with, endorsed by, or supported by the Monica project.
 
@@ -37,12 +37,12 @@ This community package is independently maintained and is not affiliated with, e
 
 ## 安装
 
-    dotnet add package Euynac.Monica.GachaPool --prerelease
+    dotnet add package Tairitsua.Monica.GachaPool --prerelease
 
 ## 定义并注册卡池
 
-    using Euynac.Monica.GachaPool.Models;
-    using Euynac.Monica.GachaPool.Modules;
+    using Tairitsua.Monica.GachaPool.Models;
+    using Tairitsua.Monica.GachaPool.Modules;
 
     var featuredPool = GachaPoolBuilder
         .Create<Reward>("featured", "精选奖励")
@@ -75,7 +75,7 @@ This community package is independently maintained and is not affiliated with, e
 
 ## 执行强类型抽取
 
-    using Euynac.Monica.GachaPool.Abstractions;
+    using Tairitsua.Monica.GachaPool.Abstractions;
 
     public sealed class RewardService(IGachaPoolCatalog pools)
     {
@@ -93,24 +93,24 @@ API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica �
 
 ## 启动桥接 Demo
 
-桥接项目内置两个示例卡池，启动后访问 **http://127.0.0.1:5279/euynac-gacha-pool**。
+桥接项目内置两个示例卡池，启动后访问 **http://127.0.0.1:5279/tairitsua-gacha-pool**。
 
-    dotnet run --project samples/Euynac.Monica.GachaPool.Bridge/Euynac.Monica.GachaPool.Bridge.csproj
+    dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 
 正常构建直接使用已发布的 Monica 1.0.0-rc.6 包。参与框架开发时，可以显式切换为本地 Monica 源码，
 无需修改项目文件：
 
-    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
+    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
 
 `MonicaSourceRoot` 必须指向包含 `Monica.Core`、`Monica.UI` 和 `Monica.Testing` 的仓库目录；项目不会自动
 探测任何同级或固定路径。
 
 ## 构建与打包
 
-    dotnet restore Euynac.Monica.GachaPool.slnx
-    dotnet build Euynac.Monica.GachaPool.slnx --configuration Release --no-restore
-    dotnet test tests/Test.Euynac.Monica.GachaPool/Test.Euynac.Monica.GachaPool.csproj --configuration Release --no-build
-    dotnet pack src/Euynac.Monica.GachaPool/Euynac.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
+    dotnet restore Tairitsua.Monica.GachaPool.slnx
+    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore
+    dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build
+    dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
 
 发布使用不可变 SemVer 标签（例如 `v1.0.0-preview.2`）；手动触发工作流时输入不带 `v` 的同一版本号。
 工作流据此生成 `PackageVersion`，使用已发布的 Monica 包，并通过 GitHub OIDC 与受保护的 `nuget`
