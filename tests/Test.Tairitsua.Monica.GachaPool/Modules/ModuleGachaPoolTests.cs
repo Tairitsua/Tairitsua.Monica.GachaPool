@@ -45,14 +45,14 @@ public sealed class ModuleGachaPoolTests
     }
 
     [Fact]
-    public void DashboardPageUsesCollisionResistantPublicRoute()
+    public void DashboardPageUsesPackageFamilyPublicRoute()
     {
         var routes = typeof(UIGachaPoolPage)
             .GetCustomAttributes<RouteAttribute>()
             .Select(static attribute => attribute.Template);
 
         routes.Should().ContainSingle().Which.Should().Be(UIGachaPoolPage.PAGE_URL);
-        UIGachaPoolPage.PAGE_URL.Should().Be("/tairitsua-gacha-pool");
+        UIGachaPoolPage.PAGE_URL.Should().Be("/gacha-pool");
     }
 
     [Fact]

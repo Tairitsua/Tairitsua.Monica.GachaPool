@@ -93,7 +93,7 @@ API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica �
 
 ## 启动桥接 Demo
 
-桥接项目内置两个示例卡池，启动后访问 **http://127.0.0.1:5279/tairitsua-gacha-pool**。
+桥接项目内置两个示例卡池，启动后访问 **http://127.0.0.1:5279/gacha-pool**。
 
     dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 

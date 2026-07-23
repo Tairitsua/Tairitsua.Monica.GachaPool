@@ -91,7 +91,7 @@ For API or UI boundaries, inject **GachaPoolFacade**; its methods return Monica 
 
 ## Run the bridge
 
-The bridge includes two sample pools and starts the localized dashboard at `http://127.0.0.1:5279/tairitsua-gacha-pool`.
+The bridge includes two sample pools and starts the localized dashboard at `http://127.0.0.1:5279/gacha-pool`.
 
     dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 
