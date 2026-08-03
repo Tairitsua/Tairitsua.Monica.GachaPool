@@ -1,7 +1,7 @@
 # Tairitsua.Monica.GachaPool
 
 [![NuGet](https://img.shields.io/nuget/v/Tairitsua.Monica.GachaPool.svg)](https://www.nuget.org/packages/Tairitsua.Monica.GachaPool)
-[![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
+[![CI](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
 [English](README.md)
@@ -118,7 +118,7 @@ API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica �
 
 ## 支持与安全
 
-缺陷和功能建议请提交到 [GitHub Issues](https://github.com/Tairitsua/MoLibrary.GachaPool/issues)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
+缺陷和功能建议请提交到 [GitHub Issues](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/issues)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
 ## 许可证
 

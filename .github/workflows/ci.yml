@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Tairitsua/Monica
-          ref: 6b735c7fe7c0e0d650b0edaf54f82171449fd06e
+          ref: b91c7c2828236298732ddd5dbc0359d5c697fdd2
           path: .dependencies/Monica
 
       - name: Set up .NET

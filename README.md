@@ -1,7 +1,7 @@
 # Tairitsua.Monica.GachaPool
 
 [![NuGet](https://img.shields.io/nuget/v/Tairitsua.Monica.GachaPool.svg)](https://www.nuget.org/packages/Tairitsua.Monica.GachaPool)
-[![CI](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/MoLibrary.GachaPool/actions/workflows/ci.yml)
+[![CI](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml/badge.svg)](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10B981.svg)](LICENSE)
 
 [简体中文](README.zh_CN.md)
@@ -116,7 +116,7 @@ Monica packages, and uses NuGet Trusted Publishing through GitHub OIDC and a pro
 
 ## Support and security
 
-Use [GitHub Issues](https://github.com/Tairitsua/MoLibrary.GachaPool/issues) for defects and feature requests. Report vulnerabilities according to [SECURITY.md](SECURITY.md).
+Use [GitHub Issues](https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/issues) for defects and feature requests. Report vulnerabilities according to [SECURITY.md](SECURITY.md).
 
 ## License
 

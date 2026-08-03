@@ -12,9 +12,9 @@
     <PackageDescription>A typed, thread-safe gacha pool engine for Monica with limited inventory, statistics, fluent host composition, and a localized MudBlazor dashboard.</PackageDescription>
     <PackageTags>monica;monica-module;monica-ecosystem-v1;monica-ui;gacha;probability;random;game;blazor;mudblazor</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Tairitsua/MoLibrary.GachaPool</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Tairitsua/Tairitsua.Monica.GachaPool</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/Tairitsua/MoLibrary.GachaPool</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Tairitsua/Tairitsua.Monica.GachaPool</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>monica-compatibility-mark.png</PackageIcon>
     <PackageReleaseNotes>First Monica ecosystem preview: rewritten weighted draw engine, multi-pool catalog, statistics, limited inventory, and localized UI dashboard.</PackageReleaseNotes>
