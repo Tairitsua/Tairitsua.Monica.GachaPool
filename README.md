@@ -1,15 +1,17 @@
 # Tairitsua.Monica.GachaPool
 
 <p align="center">
+  <img src="https://raw.githubusercontent.com/Tairitsua/Tairitsua.Monica.GachaPool/master/monica-compatibility-mark.png" alt="Monica Compatibility Mark" width="128" />
+</p>
+
+<p align="center">
   <a href="https://www.nuget.org/packages/Tairitsua.Monica.GachaPool"><img src="https://img.shields.io/nuget/v/Tairitsua.Monica.GachaPool.svg" alt="NuGet"></a>
   <a href="https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml"><img src="https://github.com/Tairitsua/Tairitsua.Monica.GachaPool/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-10B981.svg" alt="License: MIT"></a>
 </p>
 
-[简体中文](README.zh_CN.md)
-
 <p align="center">
-  <img src="monica-compatibility-mark.png" alt="Monica Compatibility Mark">
+  English | <a href="README.zh_CN.md">简体中文</a>
 </p>
 
 **Tairitsua.Monica.GachaPool** is a complete rewrite of the original MoLibrary.GachaPool as a Monica ecosystem package. One NuGet package contains two coherent Monica modules:
