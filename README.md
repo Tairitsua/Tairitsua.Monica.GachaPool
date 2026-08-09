@@ -35,7 +35,7 @@ Monica compatibility is self-attested by the publisher. This community package i
 ## Requirements
 
 - .NET 10
-- Monica 1.0.0-rc.6 or later in the same prerelease line
+- Monica 1.0.0-rc.12
 
 Because the Monica dependency is prerelease, this package also remains prerelease.
 
@@ -101,13 +101,8 @@ The bridge includes two sample pools and starts the localized dashboard at `http
 
     dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 
-Normal builds consume the released Monica 1.0.0-rc.6 packages. Framework contributors can explicitly opt into a
-local Monica source checkout without changing project files:
-
-    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
-
-`MonicaSourceRoot` must point to the repository directory containing `Monica.Core`, `Monica.UI`, and
-`Monica.Testing`. No source checkout is discovered implicitly.
+Builds consume the released Monica 1.0.0-rc.12 packages directly. The repository manifest and project references
+declare the same framework release so validation, CI, and published artifacts use one contract.
 
 ## Build and pack
 
@@ -115,6 +110,9 @@ local Monica source checkout without changing project files:
     dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore
     dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build
     dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
+    python scripts/validate_repository.py --root .
+    python -m unittest discover --start-directory scripts/tests --verbose
+    python scripts/validate_localization.py --root . --strict
 
 Releases are immutable SemVer tags such as `v1.0.0-preview.2`. A manual workflow run requires the same version
 without the leading `v`. The publish workflow derives `PackageVersion` from that immutable input, consumes released

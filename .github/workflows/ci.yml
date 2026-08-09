@@ -12,19 +12,10 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    env:
-      MONICA_SOURCE_ROOT: ${{ github.workspace }}/.dependencies/Monica
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-
-      - name: Check out the Monica rc.6 source contract
-        uses: actions/checkout@v4
-        with:
-          repository: Tairitsua/Monica
-          ref: b91c7c2828236298732ddd5dbc0359d5c697fdd2
-          path: .dependencies/Monica
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
@@ -36,23 +27,26 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate package contract
-        run: python scripts/validate_package.py --root .
+      - name: Validate repository contract
+        run: python scripts/validate_repository.py --root .
+
+      - name: Test repository validator
+        run: python -m unittest discover --start-directory scripts/tests --verbose
 
       - name: Validate localization
         run: python scripts/validate_localization.py --root . --strict
 
       - name: Restore
-        run: dotnet restore Tairitsua.Monica.GachaPool.slnx -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet restore Tairitsua.Monica.GachaPool.slnx
 
       - name: Build
-        run: dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore
 
       - name: Pack
-        run: dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts -p:MonicaSourceRoot="$MONICA_SOURCE_ROOT"
+        run: dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --no-restore --output artifacts
 
       - name: Inspect package artifacts
         run: python scripts/inspect_package.py --root . --artifacts artifacts

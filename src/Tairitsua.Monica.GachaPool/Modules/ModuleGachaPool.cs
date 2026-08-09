@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Monica.Core;
 using Monica.Core.Modularity;
 using Monica.Core.Modularity.Abstractions;
-using Monica.Core.Modularity.Annotations;
 using Monica.Core.Modularity.Models;
 using Monica.Modules;
 
@@ -19,29 +18,40 @@ namespace Tairitsua.Monica.GachaPool.Modules;
 /// <summary>
 /// Registers the host-scoped gacha pool catalog, weighted draw engine, and Facade.
 /// </summary>
-[ModuleKey("Tairitsua.Monica.GachaPool")]
-public sealed class ModuleGachaPool(ModuleGachaPoolOption option)
-    : ModuleBase<ModuleGachaPool, ModuleGachaPoolOption, ModuleGachaPoolGuide>(option)
+public sealed class ModuleGachaPool : MonicaModule<ModuleGachaPoolOption>
 {
     /// <inheritdoc />
-    public override void ClaimDependencies()
+    public override void Describe(ModuleDescriptor module)
     {
-        DependsOnModule<ModuleLocalizationGuide>().Register()
-            .AddResource<GachaPoolResource>();
+        module.Require<ModuleLocalization, ModuleLocalizationOption>(localization =>
+        {
+            if (!localization.ResourceMarkerTypes.Contains(typeof(GachaPoolResource)))
+            {
+                localization.ResourceMarkerTypes.Add(typeof(GachaPoolResource));
+            }
+        });
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceCollection services)
+    public override void ValidateOptions(ModuleGachaPoolOption options, string? profileName)
     {
-        services.AddOptions<ModuleGachaPoolOption>()
-            .Validate(
-                static options => options.RecentDrawHistoryLimit is >= 0 and <= 500,
-                $"{nameof(ModuleGachaPoolOption.RecentDrawHistoryLimit)} must be between 0 and 500.")
-            .Validate(
-                static options => options.MaximumBatchSize is >= 1 and <= 1000,
-                $"{nameof(ModuleGachaPoolOption.MaximumBatchSize)} must be between 1 and 1000.")
-            .ValidateOnStart();
+        if (options.RecentDrawHistoryLimit is < 0 or > 500)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ModuleGachaPoolOption.RecentDrawHistoryLimit)} must be between 0 and 500.");
+        }
 
+        if (options.MaximumBatchSize is < 1 or > 1000)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ModuleGachaPoolOption.MaximumBatchSize)} must be between 1 and 1000.");
+        }
+    }
+
+    /// <inheritdoc />
+    public override void ConfigureServices(ModuleContext<ModuleGachaPoolOption> context)
+    {
+        var services = context.Services;
         services.TryAddSingleton<IGachaRandomSource, SystemGachaRandomSource>();
         services.TryAddSingleton<IGachaPoolCatalog, GachaPoolCatalog>();
         services.AddScoped<GachaPoolFacade>();
@@ -59,39 +69,42 @@ public static class ModuleGachaPoolBuilderExtensions
         /// Registers the gacha pool engine and host-owned catalog.
         /// </summary>
         /// <param name="action">Optional callback that configures history and batch limits.</param>
-        /// <returns>A guide used to register immutable pool definitions.</returns>
-        public ModuleGachaPoolGuide AddGachaPool(Action<ModuleGachaPoolOption>? action = null)
+        /// <returns>The host-bound module registration.</returns>
+        public ModuleRegistration<ModuleGachaPool, ModuleGachaPoolOption> AddGachaPool(
+            Action<ModuleGachaPoolOption>? action = null)
         {
-            return builder.AddModule<ModuleGachaPool, ModuleGachaPoolOption, ModuleGachaPoolGuide>(action);
+            return builder.AddModule<ModuleGachaPool, ModuleGachaPoolOption>(action);
         }
     }
 }
 
 /// <summary>
-/// Configures immutable gacha pools that the host materializes when its service provider is built.
+/// Adds host-owned pool definitions to a GachaPool module registration.
 /// </summary>
-public sealed class ModuleGachaPoolGuide
-    : ModuleGuide<ModuleGachaPool, ModuleGachaPoolOption, ModuleGachaPoolGuide>
+public static class ModuleGachaPoolRegistrationExtensions
 {
-    /// <summary>
-    /// Registers one typed pool definition.
-    /// </summary>
-    /// <typeparam name="TPrize">The publisher-owned prize value type.</typeparam>
-    /// <param name="definition">An immutable, validated pool definition.</param>
-    /// <returns>The current guide.</returns>
-    /// <remarks>
-    /// Pool identifiers are unique under ordinal case-insensitive comparison. Registering two different definitions
-    /// with the same identifier causes catalog materialization to fail rather than silently replacing one.
-    /// </remarks>
-    public ModuleGachaPoolGuide AddPool<TPrize>(GachaPoolDefinition<TPrize> definition) where TPrize : notnull
+    extension(ModuleRegistration<ModuleGachaPool, ModuleGachaPoolOption> registration)
     {
-        ArgumentNullException.ThrowIfNull(definition);
+        /// <summary>
+        /// Registers one typed pool definition.
+        /// </summary>
+        /// <typeparam name="TPrize">The publisher-owned prize value type.</typeparam>
+        /// <param name="definition">An immutable, validated pool definition.</param>
+        /// <returns>The current host-bound module registration.</returns>
+        /// <remarks>
+        /// Pool identifiers are unique under ordinal case-insensitive comparison. Registering two different definitions
+        /// with the same identifier causes catalog materialization to fail rather than silently replacing one.
+        /// </remarks>
+        public ModuleRegistration<ModuleGachaPool, ModuleGachaPoolOption> AddPool<TPrize>(
+            GachaPoolDefinition<TPrize> definition)
+            where TPrize : notnull
+        {
+            ArgumentNullException.ThrowIfNull(definition);
 
-        ConfigureServices(
-            context => context.Services.AddSingleton<IGachaPoolRegistration>(
-                new GachaPoolRegistration<TPrize>(definition)),
-            secondKey: $"{definition.Id}:{Guid.NewGuid():N}");
-        return this;
+            return registration.ConfigureServices(context =>
+                context.Services.AddSingleton<IGachaPoolRegistration>(
+                    new GachaPoolRegistration<TPrize>(definition)));
+        }
     }
 }
 

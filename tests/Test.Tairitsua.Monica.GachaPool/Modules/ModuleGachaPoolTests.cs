@@ -9,7 +9,6 @@ using Tairitsua.Monica.GachaPool.Modules;
 using Tairitsua.Monica.GachaPool.Pages;
 using Test.Tairitsua.Monica.GachaPool.Support;
 using Microsoft.AspNetCore.Components;
-using Monica.Core.Modularity.Annotations;
 using Monica.Core.Results;
 using Monica.UI.Shell.Models;
 using Monica.UI.Shell.Support;
@@ -19,7 +18,7 @@ namespace Test.Tairitsua.Monica.GachaPool.Modules;
 public sealed class ModuleGachaPoolTests
 {
     [Fact]
-    public async Task HostComposesBothPackageModulesWithCanonicalKeys()
+    public async Task HostComposesBothPackageModulesWithTypedIdentity()
     {
         var factory = new GachaPoolTestApplicationFactory(includeUi: true);
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -27,24 +26,36 @@ public sealed class ModuleGachaPoolTests
         await using var application = await factory.CreateAsync(cancellationToken: cancellationToken);
         await using var scope = application.CreateScope(cancellationToken);
 
-        var keys = application.ModuleSnapshots
-            .Where(snapshot => snapshot.ModuleType == typeof(ModuleGachaPool)
-                               || snapshot.ModuleType == typeof(ModuleGachaPoolUI))
-            .Select(snapshot => snapshot.ModuleKey.Value)
+        var moduleTypes = application.ModuleSnapshots
+            .Select(static snapshot => snapshot.ModuleType)
             .ToArray();
 
-        keys.Should().BeEquivalentTo(
-            "Tairitsua.Monica.GachaPool",
-            "Tairitsua.Monica.GachaPool.UI");
+        moduleTypes.Should().Contain(typeof(ModuleGachaPool));
+        moduleTypes.Should().Contain(typeof(ModuleGachaPoolUI));
         scope.Resolve<IGachaPoolCatalog>().GetPools().Should().HaveCount(3);
         scope.Resolve<GachaPoolFacade>().GetPools().Status.Should().Be(ResStatus.Ok);
     }
 
-    [Fact]
-    public void ModuleTypesDeclareCanonicalPackageKeys()
+    [Theory]
+    [InlineData(-1, 100, nameof(ModuleGachaPoolOption.RecentDrawHistoryLimit))]
+    [InlineData(501, 100, nameof(ModuleGachaPoolOption.RecentDrawHistoryLimit))]
+    [InlineData(24, 0, nameof(ModuleGachaPoolOption.MaximumBatchSize))]
+    [InlineData(24, 1001, nameof(ModuleGachaPoolOption.MaximumBatchSize))]
+    public void ModuleValidationRejectsOutOfRangeLimits(
+        int historyLimit,
+        int maximumBatchSize,
+        string optionName)
     {
-        GetDeclaredModuleKey<ModuleGachaPool>().Should().Be("Tairitsua.Monica.GachaPool");
-        GetDeclaredModuleKey<ModuleGachaPoolUI>().Should().Be("Tairitsua.Monica.GachaPool.UI");
+        var options = new ModuleGachaPoolOption
+        {
+            RecentDrawHistoryLimit = historyLimit,
+            MaximumBatchSize = maximumBatchSize
+        };
+
+        var action = () => new ModuleGachaPool().ValidateOptions(options, profileName: null);
+
+        action.Should().Throw<InvalidOperationException>()
+            .WithMessage($"*{optionName}*");
     }
 
     [Fact]
@@ -84,26 +95,6 @@ public sealed class ModuleGachaPoolTests
         navigationItem.CategoryId.Should().Be(categoryId);
         navigationItem.Href.Should().Be("gacha-pool");
         navigationItem.Order.Should().Be(42);
-    }
-
-    [Fact]
-    public async Task DisabledDashboardContributesNoCategoryPageOrNavigation()
-    {
-        var factory = new GachaPoolTestApplicationFactory(
-            includeUi: true,
-            disableDashboardPage: true,
-            includeShell: true);
-        var cancellationToken = TestContext.Current.CancellationToken;
-
-        await using var application = await factory.CreateAsync(cancellationToken: cancellationToken);
-        await using var scope = application.CreateScope(cancellationToken);
-        var registry = scope.Resolve<IPageCatalog>();
-        var categoryId = NavigationCategoryId.Create("Tairitsua.Monica.GachaPool");
-
-        registry.GetNavigationCategories().Should().NotContain(item => item.Id == categoryId);
-        registry.GetRegisteredPages().Should().NotContain(item => item.ComponentType == typeof(UIGachaPoolPage));
-        registry.GetNavItems().Should().NotContain(item =>
-            item.CategoryId == categoryId || item.Href == "gacha-pool");
     }
 
     [Fact]
@@ -347,11 +338,5 @@ public sealed class ModuleGachaPoolTests
 
         firstScope.Resolve<IGachaPoolCatalog>().GetPool("limited").TotalDraws.Should().Be(1);
         secondScope.Resolve<IGachaPoolCatalog>().GetPool("limited").TotalDraws.Should().Be(0);
-    }
-
-    private static string GetDeclaredModuleKey<TModule>()
-    {
-        return typeof(TModule).GetCustomAttribute<ModuleKeyAttribute>()?.Key.Value
-               ?? throw new InvalidOperationException($"{typeof(TModule).Name} does not declare a module key.");
     }
 }

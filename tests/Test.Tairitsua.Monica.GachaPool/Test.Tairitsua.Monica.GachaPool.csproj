@@ -14,11 +14,7 @@
     <ProjectReference Include="../../src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(MonicaSourceRoot)' != ''">
-    <ProjectReference Include="$(MonicaSourceRoot)/Monica.Testing/Monica.Testing.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(MonicaSourceRoot)' == ''">
+  <ItemGroup>
     <PackageReference Include="Monica.Testing" Version="$(MonicaVersion)" />
   </ItemGroup>
 

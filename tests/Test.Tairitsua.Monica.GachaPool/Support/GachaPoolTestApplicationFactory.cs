@@ -5,7 +5,6 @@ using Tairitsua.Monica.GachaPool.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Monica.Core.Modularity.Abstractions;
-using Monica.Modules;
 using Monica.Testing.Hosting;
 
 namespace Test.Tairitsua.Monica.GachaPool.Support;
@@ -13,15 +12,13 @@ namespace Test.Tairitsua.Monica.GachaPool.Support;
 internal sealed class GachaPoolTestApplicationFactory(
     IGachaRandomSource? randomSource = null,
     bool registerDuplicatePool = false,
-    bool includeUi = false,
-    bool disableDashboardPage = false,
-    bool includeShell = false)
+    bool includeUi = false)
     : MonicaTestApplicationFactory<GachaPoolFacade>
 {
     protected override void ConfigureMonica(IMonicaBuilder builder)
     {
         var limitedPool = CreateLimitedPool();
-        var guide = builder.AddGachaPool(options =>
+        var registration = builder.AddGachaPool(options =>
             {
                 options.RecentDrawHistoryLimit = 8;
                 options.MaximumBatchSize = 20;
@@ -32,18 +29,12 @@ internal sealed class GachaPoolTestApplicationFactory(
 
         if (registerDuplicatePool)
         {
-            guide.AddPool(limitedPool);
-        }
-
-        if (includeShell)
-        {
-            builder.AddUIShell();
+            registration.AddPool(limitedPool);
         }
 
         if (includeUi)
         {
-            builder.AddGachaPoolUI(options =>
-                options.DisableDashboardPage = disableDashboardPage);
+            builder.AddGachaPoolUI();
         }
     }
 

@@ -67,8 +67,11 @@ jobs:
 
           echo "value=$package_version" >> "$GITHUB_OUTPUT"
 
-      - name: Validate package contract
-        run: python scripts/validate_package.py --root . --package-version "${{ steps.package-version.outputs.value }}"
+      - name: Validate repository contract
+        run: python scripts/validate_repository.py --root . --package-version "${{ steps.package-version.outputs.value }}"
+
+      - name: Test repository validator
+        run: python -m unittest discover --start-directory scripts/tests --verbose
 
       - name: Validate localization
         run: python scripts/validate_localization.py --root . --strict

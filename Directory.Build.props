@@ -9,7 +9,6 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-    <MonicaVersion>1.0.0-rc.6</MonicaVersion>
-    <MonicaSourceRoot Condition="'$(MonicaSourceRoot)' != ''">$([System.IO.Path]::GetFullPath('$(MonicaSourceRoot)'))</MonicaSourceRoot>
+    <MonicaVersion>1.0.0-rc.12</MonicaVersion>
   </PropertyGroup>
 </Project>

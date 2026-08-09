@@ -69,10 +69,6 @@ TEST_PROJECT_PATTERN = re.compile(
     r'<IsTestProject(?:\s+[^>]*)?>\s*true\s*</IsTestProject>',
     re.IGNORECASE,
 )
-LITERAL_UI_MODULE_KEY_PATTERN = re.compile(
-    r'\[\s*ModuleKey\s*\(\s*"[^"]*\.UI"\s*\)\s*\]',
-    re.IGNORECASE,
-)
 ADD_RESOURCE_PATTERN = re.compile(
     r'\bAddResource\s*<\s*'
     r'(?P<resource>(?:global::)?[A-Za-z_][A-Za-z0-9_]*(?:(?:::|\.)[A-Za-z_][A-Za-z0-9_]*)*)'
@@ -208,7 +204,6 @@ class LocalizationValidator:
             if (
                 'RegisterLocalizedPage<' in module_text
                 or 'RegisterLocalizedComponent<' in module_text
-                or LITERAL_UI_MODULE_KEY_PATTERN.search(module_text)
             ):
                 return True
 
@@ -233,7 +228,7 @@ class LocalizationValidator:
             self.discovery_errors.append(
                 'No eligible UI or localized project was found under the requested root. '
                 'Razor SDK, Razor files, localization resources, localized registrations, '
-                'or a final .UI module key are accepted evidence.'
+                'or a module class with a final UI suffix are accepted evidence.'
             )
             return
 

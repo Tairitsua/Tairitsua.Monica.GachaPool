@@ -37,7 +37,7 @@ Monica compatibility is self-attested by the publisher. This community package i
 ## 环境要求
 
 - .NET 10
-- Monica 1.0.0-rc.6 或同一预发布线的更高版本
+- Monica 1.0.0-rc.12
 
 由于依赖的 Monica 仍处于预发布阶段，本包也必须保持预发布版本。
 
@@ -103,13 +103,8 @@ API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica �
 
     dotnet run --project samples/Tairitsua.Monica.GachaPool.Bridge/Tairitsua.Monica.GachaPool.Bridge.csproj
 
-正常构建直接使用已发布的 Monica 1.0.0-rc.6 包。参与框架开发时，可以显式切换为本地 Monica 源码，
-无需修改项目文件：
-
-    dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release -p:MonicaSourceRoot=/path/to/Monica
-
-`MonicaSourceRoot` 必须指向包含 `Monica.Core`、`Monica.UI` 和 `Monica.Testing` 的仓库目录；项目不会自动
-探测任何同级或固定路径。
+构建直接使用已发布的 Monica 1.0.0-rc.12 包。仓库清单与项目引用声明同一框架版本，确保验证、
+CI 与发布制品共享同一份契约。
 
 ## 构建与打包
 
@@ -117,6 +112,9 @@ API 或 UI 边界可直接注入 **GachaPoolFacade**；其方法返回 Monica �
     dotnet build Tairitsua.Monica.GachaPool.slnx --configuration Release --no-restore
     dotnet test tests/Test.Tairitsua.Monica.GachaPool/Test.Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build
     dotnet pack src/Tairitsua.Monica.GachaPool/Tairitsua.Monica.GachaPool.csproj --configuration Release --no-build --output artifacts
+    python scripts/validate_repository.py --root .
+    python -m unittest discover --start-directory scripts/tests --verbose
+    python scripts/validate_localization.py --root . --strict
 
 发布使用不可变 SemVer 标签（例如 `v1.0.0-preview.2`）；手动触发工作流时输入不带 `v` 的同一版本号。
 工作流据此生成 `PackageVersion`，使用已发布的 Monica 包，并通过 GitHub OIDC 与受保护的 `nuget`
